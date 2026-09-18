@@ -1,0 +1,32 @@
+# NOTE : le chapitre 02 embarque deja un application.yaml. Les ressources du
+# module courant precedent celles de ses dependances dans le classpath Maven :
+# c'est donc CE fichier qui est charge lorsqu'on execute le chapitre 04, et il
+# reprend volontairement les reglages JPA/Flyway du chapitre 02.
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 0
+  flyway:
+    enabled: true
+    # Les migrations des chapitres 02 et 04 partagent cet emplacement de
+    # classpath : Flyway fusionne les jars et applique V1 puis V2.
+    locations: classpath:db/migration
+  cloud:
+    gcp:
+      # Sur l'emulateur, ce projet n'a pas besoin d'exister reellement.
+      project-id: formation-banque
+      # spring.cloud.gcp.pubsub.emulator-host est positionne par les tests via
+      # @DynamicPropertySource, a partir du conteneur demarre. En production
+      # cette propriete est absente et le client parle a la vraie API Google.
+
+banque:
+  pubsub:
+    topic-sortant: virements-executes
+    souscription-entrante: virements-executes-journal
+    # En production, l'infrastructure provisionne topic et souscription.
+    creer-au-demarrage: false

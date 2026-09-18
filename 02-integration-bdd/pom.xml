@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>fr.formation.banque</groupId>
+        <artifactId>java-test-formation</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>02-integration-bdd</artifactId>
+    <name>02 - Integration base de donnees</name>
+    <description>Adaptateur JPA du domaine, teste sur une vraie PostgreSQL via Testcontainers</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.formation.banque</groupId>
+            <artifactId>01-tests-unitaires</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Les migrations font partie du code de production : elles se testent.
+
+             ATTENTION Spring Boot 4 : les autoconfigurations ont ete eclatees en
+             modules. flyway-core apporte la BIBLIOTHEQUE, spring-boot-flyway apporte
+             l'AUTOCONFIGURATION. Sans ce second artifact, Flyway ne demarre jamais et
+             l'erreur observee est trompeuse :
+               "Schema validation: missing table [compte]".
+             En Boot 3, flyway-core suffisait (tout etait dans spring-boot-autoconfigure). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- ATTENTION Spring Boot 4 : @DataJpaTest n'est plus dans
+             spring-boot-test-autoconfigure mais dans son propre module.
+             Package : org.springframework.boot.data.jpa.test.autoconfigure -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-data-jpa-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ATTENTION Spring Boot 4 : @AutoConfigureTestDatabase a migre ici.
+             Package : org.springframework.boot.jdbc.test.autoconfigure -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jdbc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Fournit @ServiceConnection : le conteneur configure lui-meme la DataSource. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ATTENTION Testcontainers 2.x : les artifactId sont prefixes
+             (postgresql -> testcontainers-postgresql). -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

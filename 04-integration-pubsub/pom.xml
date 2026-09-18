@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>fr.formation.banque</groupId>
+        <artifactId>java-test-formation</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>04-integration-pubsub</artifactId>
+    <name>04 - Integration Pub/Sub</name>
+    <description>Publication et consommation d'evenements sur l'emulateur Google Cloud Pub/Sub</description>
+
+    <dependencies>
+        <!-- Apporte le domaine (01), la persistance (02) et l'API REST (03). -->
+        <dependency>
+            <groupId>fr.formation.banque</groupId>
+            <artifactId>03-integration-rest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-pubsub</artifactId>
+        </dependency>
+
+        <!-- ATTENTION Testcontainers 2.x : l'artifactId etait 'gcloud' en 1.x. -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-gcloud</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-resttestclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

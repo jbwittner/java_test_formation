@@ -1,0 +1,23 @@
+spring:
+  jpa:
+    # validate, jamais update : le schema vient des migrations Flyway.
+    # Ainsi un ecart entre l'entite et la table fait ECHOUER le demarrage,
+    # donc echouer le test -- au lieu de laisser Hibernate corriger en silence.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          # Necessaire pour que Hibernate remonte le nombre de lignes affectees
+          # par lot, et donc detecte les conflits de verrouillage optimiste.
+          batch_size: 0
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+logging:
+  level:
+    # Decommenter pendant la formation pour montrer les requetes reellement emises :
+    # org.hibernate.SQL: DEBUG
+    org.flywaydb: INFO

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>fr.formation.banque</groupId>
+        <artifactId>java-test-formation</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>03-integration-rest</artifactId>
+    <name>03 - Integration REST</name>
+    <description>Controller REST : slice @WebMvcTest et test bout en bout avec RestTestClient</description>
+
+    <dependencies>
+        <!-- Apporte le domaine (01) ET la persistance PostgreSQL (02). -->
+        <dependency>
+            <groupId>fr.formation.banque</groupId>
+            <artifactId>02-integration-bdd</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- ATTENTION Spring Boot 4 : @WebMvcTest et @AutoConfigureMockMvc ont
+             quitte spring-boot-test-autoconfigure.
+             Package : org.springframework.boot.webmvc.test.autoconfigure -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- RestTestClient : le client de test bout en bout de Spring Boot 4,
+             qui remplace TestRestTemplate. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-resttestclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Chaque chapitre embarque sa propre configuration Testcontainers :
+             un module reste ainsi lisible et executable isolement, ce qui compte
+             plus ici que d'eviter une duplication de quinze lignes. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

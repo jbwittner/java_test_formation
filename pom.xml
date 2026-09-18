@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>fr.formation.banque</groupId>
+    <artifactId>java-test-formation</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Formation Tests Java / Spring Boot</name>
+    <description>Support de formation : tests unitaires et tests d'integration avec Spring Boot</description>
+
+    <modules>
+        <module>01-tests-unitaires</module>
+        <module>00-antipatterns</module>
+        <module>02-integration-bdd</module>
+        <module>03-integration-rest</module>
+        <module>04-integration-pubsub</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-cloud-gcp.version>8.2.1</spring-cloud-gcp.version>
+        <jacoco.version>0.8.15</jacoco.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>spring-cloud-gcp-dependencies</artifactId>
+                <version>${spring-cloud-gcp.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Toute la formation utilise JUnit 5, AssertJ, Mockito et Awaitility,
+             tous fournis par ce seul starter. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Le plugin Spring Boot ne sert qu'a packager une application executable.
+                     Les modules de la formation sont des bibliotheques : on le desactive
+                     par defaut, chaque module qui en a besoin le reactive. -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- LECON : la separation unitaires / integration passe par le build.
+                 surefire  (mvn test)   -> *Test  : rapides, aucune dependance externe.
+                 failsafe  (mvn verify) -> *IT    : lents, Docker requis. -->
+            <!-- Expose la position des jars de dependances sous forme de proprietes Maven.
+                 Sert a passer mockito-core en -javaagent (voir argLine ci-dessous) :
+                 depuis JDK 21 l'auto-attachement de Mockito est deprecie et bruyant. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>proprietes-dependances</id>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Rapport de couverture SANS seuil bloquant : support de la discussion
+                 « couverture != qualite » (cf. docs/02-bon-test-unitaire.md). -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

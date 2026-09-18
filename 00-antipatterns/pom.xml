@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>fr.formation.banque</groupId>
+        <artifactId>java-test-formation</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>00-antipatterns</artifactId>
+    <name>00 - Anti-patterns</name>
+    <description>Mauvais tests et leur correction, cote a cote</description>
+
+    <dependencies>
+        <!-- Les anti-patterns sont illustres sur le domaine du chapitre 01. -->
+        <dependency>
+            <groupId>fr.formation.banque</groupId>
+            <artifactId>01-tests-unitaires</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -107,7 +107,7 @@ base neuve et aucune trace résiduelle.
 | `Schema validation: missing table` | Flyway n'a pas tourné (autoconfiguration absente) |
 | Aucun message reçu sur Pub/Sub | souscription créée **après** la publication |
 | Un seul test sur deux reçoit le message | deux consommateurs sur la même souscription |
-| Premier `verify` très long | téléchargement des images |
+| Premier `test` très long | téléchargement des images |
 
 ## Images utilisées
 

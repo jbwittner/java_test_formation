@@ -47,7 +47,7 @@ insertion arrive par un script.
 4. Test 3 : un `CompteEntity` de solde négatif.
 
 ```bash
-./mvnw -pl 02-integration-bdd -am verify
+./mvnw -pl 02-integration-bdd -am test
 ```
 
 ## ⚠️ Le piège principal

@@ -72,7 +72,7 @@ en base : le service est mocké, la persistance se teste au chapitre 02.
    non-appel) du service mocké.
 
 ```bash
-./mvnw -pl 03-integration-rest -am verify
+./mvnw -pl 03-integration-rest -am test
 ```
 
 ## Checklist des cas attendus

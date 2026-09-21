@@ -86,7 +86,7 @@ if ($dockerPret) {
     }
 }
 
-Write-Titre '4. Suite unitaire (aucun Docker requis)'
+Write-Titre '4. Suite complete (unitaires + integration, Docker requis)'
 $journal = Join-Path ([System.IO.Path]::GetTempPath()) 'formation-preflight.log'
 # $IsWindows n'existe pas en Windows PowerShell 5.1 : on retombe sur $env:OS.
 $surWindows = if (Test-Path variable:IsWindows) { $IsWindows } else { $env:OS -eq 'Windows_NT' }

@@ -61,7 +61,7 @@ else
     done
 fi
 
-titre "4. Suite unitaire (aucun Docker requis)"
+titre "4. Suite complète (unitaires + intégration, Docker requis)"
 if ./mvnw -q test > /tmp/formation-preflight.log 2>&1; then
     ok "./mvnw test est vert"
 else

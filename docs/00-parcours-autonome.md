@@ -99,21 +99,24 @@ Dans cet ordre, et pas dans un autre :
 
 ---
 
-## 6. Les deux commandes, et pourquoi il y en a deux
+## 6. La commande, et son raccourci
 
 ```bash
-./mvnw test      # suffixe *Test  — unitaires   — aucun Docker  — ~7 s
-./mvnw verify    # suffixe *IT    — intégration — Docker requis — ~35 s
+./mvnw test             # TOUT : *Test et *IT — Docker requis — ~23 s
+./mvnw test -Prapide    # *Test seuls — aucun Docker — ~7 s
 ```
 
-Cette séparation est elle-même un enseignement : la suite rapide doit rester
-lançable en permanence, sans dépendance externe. Pendant les exercices 1 et 2,
-utilisez `./mvnw -pl 01-tests-unitaires test` — moins d'une seconde par boucle.
+**Une seule commande lance toute la suite.** Le profil `rapide` est un confort de
+boucle de développement, pas la commande de référence : un test qui ne tourne que
+dans une commande qu'on oublie de taper ne protège rien.
 
-Pour ne lancer qu'un module d'intégration :
+Pendant les exercices 1 et 2, utilisez `./mvnw -pl 01-tests-unitaires test` —
+moins d'une seconde par boucle.
+
+Pour ne lancer qu'un module :
 
 ```bash
-./mvnw -pl 02-integration-bdd -am verify
+./mvnw -pl 02-integration-bdd -am test
 ```
 
 Le `-am` est obligatoire : il construit d'abord le module `01` dont les autres

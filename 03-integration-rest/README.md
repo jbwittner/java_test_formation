@@ -48,5 +48,5 @@ chapitre 01, la persistance au chapitre 02, la messagerie au chapitre 04.
 ## Lancer
 
 ```bash
-./mvnw -pl 03-integration-rest -am verify
+./mvnw -pl 03-integration-rest -am test
 ```

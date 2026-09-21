@@ -126,9 +126,9 @@ Fourni par `spring-boot-starter-test`, aucune dépendance à ajouter.
 ## Commandes
 
 ```bash
-./mvnw test                               # unitaires seuls (~7 s, sans Docker)
-./mvnw verify                             # tout (~34 s, Docker requis)
-./mvnw -pl 02-integration-bdd -am verify  # un chapitre (-am : construit ses dépendances)
+./mvnw test                               # TOUT : *Test et *IT (~23 s, Docker requis)
+./mvnw test -Prapide                      # *Test seuls (~7 s, sans Docker)
+./mvnw -pl 02-integration-bdd -am test    # un chapitre (-am : construit ses dépendances)
 ./mvnw -Dtest=MontantTest test            # une classe
 ./mvnw -Dtest='*Compte*' test             # un motif
 ```
@@ -138,7 +138,9 @@ autres et ne sont pas installés dans le dépôt local.
 
 ## Convention de nommage du projet
 
-| Suffixe | Nature | Plugin | Commande | Docker |
-|---|---|---|---|---|
-| `*Test` | unitaire | surefire | `mvn test` | non |
-| `*IT` | intégration | failsafe | `mvn verify` | oui |
+| Suffixe | Nature | Coût | Docker |
+|---|---|---|---|
+| `*Test` | unitaire ou slice | millisecondes | non |
+| `*IT` | intégration | secondes | oui |
+
+Les deux tournent dans `mvn test`. Le suffixe dit le **coût**, pas la commande.

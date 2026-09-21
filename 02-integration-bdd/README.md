@@ -33,5 +33,5 @@ défini par le domaine au chapitre 01.
 ## Lancer
 
 ```bash
-./mvnw -pl 02-integration-bdd -am verify
+./mvnw -pl 02-integration-bdd -am test
 ```

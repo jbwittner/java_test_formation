@@ -59,5 +59,5 @@ la persistance au chapitre 02, le contrat HTTP au chapitre 03.
 ## Lancer
 
 ```bash
-./mvnw -pl 04-integration-pubsub -am verify
+./mvnw -pl 04-integration-pubsub -am test
 ```

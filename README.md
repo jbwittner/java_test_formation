@@ -24,13 +24,13 @@ docker pull postgres:17-alpine
 docker pull gcr.io/google.com/cloudsdktool/google-cloud-cli:579.0.0-emulators
 ```
 
-Sans cela, le premier `./mvnw verify` inclut le téléchargement et peut durer
+Sans cela, le premier `./mvnw test` inclut le téléchargement et peut durer
 plusieurs minutes.
 
 ## Démarrage
 
 ```bash
-bash outils/verifier-environnement.sh   # préflight : JDK, Docker, images, suite unitaire
+bash outils/verifier-environnement.sh   # préflight : JDK, Docker, images, suite complète
 ```
 
 Sous Windows (PowerShell), utiliser l'équivalent :
@@ -47,11 +47,15 @@ powershell -ExecutionPolicy Bypass -File .\outils\verifier-environnement.ps1
 ```
 
 ```bash
-./mvnw test      # tests unitaires seuls  — ~7 s, aucun Docker
-./mvnw verify    # suite complète         — ~34 s, Docker requis
+./mvnw test              # TOUTE la suite : unitaires + intégration — ~23 s, Docker requis
+./mvnw test -Prapide     # confort : unitaires seuls — ~7 s, aucun Docker
 ```
 
-Ces deux commandes doivent être vertes sur un dépôt fraîchement cloné.
+**Une seule commande lance tout.** Pas de `verify` à ne pas oublier : un test qui
+ne tourne que dans une commande qu'on oublie de taper est un test qui ne protège
+rien. Le profil `rapide` n'existe que pour la boucle de développement.
+
+Ces commandes doivent être vertes sur un dépôt fraîchement cloné.
 
 ---
 
@@ -124,13 +128,15 @@ dans le code de production pour prouver que vos tests détectent une régression
 
 ## Convention de nommage
 
-| Suffixe | Nature | Plugin Maven | Commande | Docker |
-|---|---|---|---|---|
-| `*Test` | unitaire | surefire | `./mvnw test` | non |
-| `*IT` | intégration | failsafe | `./mvnw verify` | oui |
+| Suffixe | Nature | Coût | Docker |
+|---|---|---|---|
+| `*Test` | unitaire ou slice | millisecondes | non |
+| `*IT` | intégration | secondes | oui |
 
-Cette séparation est elle-même un enseignement du chapitre 1 : la suite rapide
-doit rester lançable en permanence, sans dépendance externe.
+Les deux suffixes tournent dans `./mvnw test` : le suffixe dit ce que le test
+**coûte**, pas quand il s'exécute. Distinction utile, parce que la suite rapide
+doit rester lançable en permanence — d'où `-Prapide`, qui ne garde que les
+`*Test`.
 
 ---
 
@@ -173,6 +179,6 @@ Le tableau complet des changements est dans
 | Symptôme | Solution |
 |---|---|
 | `Could not find a valid Docker environment` | démarrer Docker |
-| `Could not find artifact fr.formation.banque:01-...` | ajouter `-am` : `./mvnw -pl 02-integration-bdd -am verify` |
-| Premier `verify` très long | téléchargement des images (voir Prérequis) |
+| `Could not find artifact fr.formation.banque:01-...` | ajouter `-am` : `./mvnw -pl 02-integration-bdd -am test` |
+| Premier `test` très long | téléchargement des images (voir Prérequis) |
 | `cannot find symbol: MockBean` | Spring Boot 4 : utiliser `@MockitoBean` |

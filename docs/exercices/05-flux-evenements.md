@@ -52,7 +52,7 @@ toutes dans le socle — c'est lui qui matérialise la frontière.
    fois, puis vérifier que le traitement est rappelé.
 
 ```bash
-./mvnw -pl 04-integration-pubsub -am verify
+./mvnw -pl 04-integration-pubsub -am test
 ```
 
 ## ⚠️ Les quatre pièges du chapitre
@@ -113,13 +113,10 @@ Le n°2 est le plus instructif sur le flux entrant : acquitter avant de traiter
 est un bug fréquent, invisible tant que rien n'échoue — et qui fait disparaître
 des messages en production au premier incident.
 
-Les n°3 et 4 cassent aussi des tests unitaires, qui s'exécutent **avant** les
-tests d'intégration : Maven s'arrêtera sur eux. C'est normal — c'est la preuve
-que le bug est détecté tôt. Pour aller quand même jusqu'aux `*IT` :
-
-```bash
-./mvnw -pl 04-integration-pubsub -am verify -Dmaven.test.failure.ignore=true
-```
+Les n°3 et 4 cassent aussi des tests unitaires : c'est normal, et c'est la
+preuve que le bug est détecté au niveau le moins cher. `*Test` et `*IT` tournant
+dans la même commande, le rapport montre les deux d'un coup — comparez le message
+d'échec du test unitaire à celui du test d'intégration.
 
 Restaurer ensuite :
 

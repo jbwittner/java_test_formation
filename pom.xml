@@ -56,6 +56,28 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <!-- Boucle de developpement rapide : `./mvnw test -Prapide` ne lance que
+             les *Test, sans Docker. C'est un CONFORT, pas la commande de
+             reference : la suite complete reste `./mvnw test`. -->
+        <profile>
+            <id>rapide</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*IT.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -73,9 +95,12 @@
         </pluginManagement>
 
         <plugins>
-            <!-- LECON : la separation unitaires / integration passe par le build.
-                 surefire  (mvn test)   -> *Test  : rapides, aucune dependance externe.
-                 failsafe  (mvn verify) -> *IT    : lents, Docker requis. -->
+            <!-- UNE SEULE COMMANDE lance TOUTE la suite : `mvn test` execute les
+                 *Test comme les *IT. Pas de plugin failsafe, donc pas de phase
+                 `verify` a ne pas oublier : un test qui ne tourne que dans une
+                 commande qu'on oublie de taper est un test qui ne protege rien.
+                 Le suffixe reste porteur de sens : *Test = rapide et sans
+                 dependance externe, *IT = lent et Docker requis. -->
             <!-- Expose la position des jars de dependances sous forme de proprietes Maven.
                  Sert a passer mockito-core en -javaagent (voir argLine ci-dessous) :
                  depuis JDK 21 l'auto-attachement de Mockito est deprecie et bruyant. -->
@@ -99,30 +124,9 @@
                     <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
                     <includes>
                         <include>**/*Test.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
-                    <includes>
                         <include>**/*IT.java</include>
                     </includes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <!-- Rapport de couverture SANS seuil bloquant : support de la discussion
@@ -140,7 +144,7 @@
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>verify</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>

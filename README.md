@@ -39,6 +39,13 @@ Sous Windows (PowerShell), utiliser l'équivalent :
 .\outils\verifier-environnement.ps1
 ```
 
+Si PowerShell refuse d'exécuter le script (`ExecutionPolicy`), le lancer sans
+changer la configuration de la machine :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\outils\verifier-environnement.ps1
+```
+
 ```bash
 ./mvnw test      # tests unitaires seuls  — ~7 s, aucun Docker
 ./mvnw verify    # suite complète         — ~34 s, Docker requis

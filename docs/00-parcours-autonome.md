@@ -12,6 +12,12 @@ sans ouvrir le corrigé.
 bash outils/verifier-environnement.sh
 ```
 
+Sous Windows (PowerShell) :
+
+```powershell
+.\outils\verifier-environnement.ps1
+```
+
 Le script vérifie le JDK, Docker, télécharge les deux images et lance la suite
 unitaire. Tant qu'il n'est pas vert, inutile d'attaquer les exercices : les
 modules 02 à 05 ne démarreront pas.

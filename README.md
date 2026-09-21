@@ -33,6 +33,12 @@ plusieurs minutes.
 bash outils/verifier-environnement.sh   # préflight : JDK, Docker, images, suite unitaire
 ```
 
+Sous Windows (PowerShell), utiliser l'équivalent :
+
+```powershell
+.\outils\verifier-environnement.ps1
+```
+
 ```bash
 ./mvnw test      # tests unitaires seuls  — ~7 s, aucun Docker
 ./mvnw verify    # suite complète         — ~34 s, Docker requis

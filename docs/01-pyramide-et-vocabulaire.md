@@ -47,10 +47,10 @@ Chiffres **mesurés sur ce dépôt** :
 
 | Suite | Commande | Tests | Durée | Docker |
 |---|---|---|---|---|
-| Unitaires | `./mvnw test` | 110 | **~8 s** | non |
-| Tout | `./mvnw verify` | 150 | **~27 s** | oui |
+| Unitaires | `./mvnw test` | 100 | **~7 s** | non |
+| Tout | `./mvnw verify` | 140 | **~25 s** | oui |
 
-Les 40 tests d'intégration coûtent plus cher que les 110 unitaires réunis. Si
+Les 40 tests d'intégration coûtent plus cher que les 100 unitaires réunis. Si
 l'on inversait les proportions, la suite passerait à plusieurs minutes — et une
 suite lente finit par ne plus être lancée.
 

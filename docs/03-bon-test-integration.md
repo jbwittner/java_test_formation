@@ -26,8 +26,8 @@ fait le domaine ensuite est déjà prouvé ailleurs.
 |---|---|
 | Une requête SQL, une cartographie JPA | `@DataJpaTest` (~1,3 s pour 5 tests) |
 | Un contrat HTTP, un code d'erreur | `@WebMvcTest` (~0,6 s pour 7 tests) |
-| Un format JSON | `@JsonTest` (~1 s pour 3 tests) |
-| Un serveur HTTP réel, un broker | `@SpringBootTest` (~1,9 s pour 5 tests) |
+| Un format JSON | `@JsonTest` (~0,9 s pour 3 tests) |
+| Un serveur HTTP réel, un broker | `@SpringBootTest` (~1,8 s pour 5 tests) |
 
 Ces durées sont mesurées sur ce dépôt. L'écart entre la slice web et le test sur
 serveur réel est d'un facteur 3 par classe — et il grimpe à un facteur 10 dès

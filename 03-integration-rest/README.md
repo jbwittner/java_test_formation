@@ -19,8 +19,8 @@ chapitre 01, la persistance au chapitre 02, la messagerie au chapitre 04.
 | Classe | Niveau | Durée mesurée |
 |---|---|---|
 | `demo/VirementControllerTest` | slice `@WebMvcTest`, service mocké | ~0,6 s / 7 tests |
-| `demo/ReponseVirementJsonTest` | slice `@JsonTest` | ~1 s / 3 tests |
-| `demo/VirementHttpIT` | `@SpringBootTest` + `RestTestClient`, serveur réel, service mocké | ~1,9 s / 5 tests |
+| `demo/ReponseVirementJsonTest` | slice `@JsonTest` | ~0,9 s / 3 tests |
+| `demo/VirementHttpIT` | `@SpringBootTest` + `RestTestClient`, serveur réel, service mocké | ~1,8 s / 5 tests |
 | `exercice/…ExerciceTest` / `…ExerciceIT` | **exercice 4**, aux deux niveaux — [fiche](../docs/exercices/04-validation-rest.md) | |
 | `corrige/` | solutions | |
 | `support/SocleCoucheRest` | socle des `*IT` : serveur réel, sans JDBC/JPA/Flyway | |

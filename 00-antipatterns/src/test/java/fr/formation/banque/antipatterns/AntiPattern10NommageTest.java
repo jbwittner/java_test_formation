@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import fr.formation.banque.domaine.Compte;
 import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.SoldeInsuffisantException;
-import fr.formation.banque.domaine.TypeCompte;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ import org.junit.jupiter.api.Test;
  * <p><b>Pourquoi c'est grave</b> : le rapport de test est le seul document qui
  * reste à jour. Quand une régression survient à 3 h du matin, on lit un nom de
  * test, pas le corps du test. {@code testDebiter2 FAILED} n'apprend rien ;
- * {@code devrait_refuser_le_debit_quand_il_depasse_le_decouvert FAILED} dit
+ * {@code devrait_refuser_le_debit_quand_il_depasse_le_solde FAILED} dit
  * immédiatement quelle règle métier est cassée.
  *
  * <p>Second symptôme, plus subtil : quand on n'arrive pas à nommer un test, c'est
@@ -36,8 +35,7 @@ import org.junit.jupiter.api.Test;
 class AntiPattern10NommageTest {
 
     private static Compte compte() {
-        return new Compte("FR76-A", TypeCompte.STANDARD,
-                Montant.euros("100.00"), Montant.euros("50.00"));
+        return new Compte("FR76-A", Montant.euros("100.00"));
     }
 
     @Nested
@@ -54,16 +52,16 @@ class AntiPattern10NommageTest {
         @Test
         void testDebiter2() {
             Compte compte = compte();
-            compte.debiter(Montant.euros("120.00"));
-            assertThat(compte.solde()).isEqualTo(Montant.euros("-20.00"));
+            compte.debiter(Montant.euros("100.00"));
+            assertThat(compte.solde()).isEqualTo(Montant.euros("0.00"));
         }
 
         @Test
         void testDebiterKo() {
-            // Lequel des trois vérifie la limite du découvert ?
+            // Lequel des trois vérifie la borne du solde ?
             // Impossible à dire sans lire le corps.
             assertThatExceptionOfType(SoldeInsuffisantException.class)
-                    .isThrownBy(() -> compte().debiter(Montant.euros("150.01")));
+                    .isThrownBy(() -> compte().debiter(Montant.euros("100.01")));
         }
     }
 
@@ -82,20 +80,20 @@ class AntiPattern10NommageTest {
         }
 
         @Test
-        @DisplayName("passe le solde en négatif quand le découvert absorbe le débit")
-        void devrait_passer_le_solde_en_negatif_quand_le_decouvert_absorbe_le_debit() {
+        @DisplayName("ramène le solde à zéro quand le débit égale le solde")
+        void devrait_ramener_le_solde_a_zero_quand_le_debit_egale_le_solde() {
             Compte compte = compte();
 
-            compte.debiter(Montant.euros("120.00"));
+            compte.debiter(Montant.euros("100.00"));
 
-            assertThat(compte.solde()).isEqualTo(Montant.euros("-20.00"));
+            assertThat(compte.solde()).isEqualTo(Montant.euros("0.00"));
         }
 
         @Test
-        @DisplayName("refuse le débit quand il dépasse solde + découvert")
-        void devrait_refuser_le_debit_quand_il_depasse_le_decouvert() {
+        @DisplayName("refuse le débit quand il dépasse le solde")
+        void devrait_refuser_le_debit_quand_il_depasse_le_solde() {
             assertThatExceptionOfType(SoldeInsuffisantException.class)
-                    .isThrownBy(() -> compte().debiter(Montant.euros("150.01")));
+                    .isThrownBy(() -> compte().debiter(Montant.euros("100.01")));
         }
     }
 }

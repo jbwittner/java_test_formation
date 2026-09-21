@@ -3,7 +3,6 @@ package fr.formation.banque.api;
 import fr.formation.banque.domaine.Compte;
 import fr.formation.banque.domaine.CompteIntrouvableException;
 import fr.formation.banque.domaine.CompteRepository;
-import fr.formation.banque.domaine.Devise;
 import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.ServiceVirement;
 import fr.formation.banque.domaine.Virement;
@@ -43,7 +42,7 @@ public class VirementController {
         Virement virement = virements.executer(
                 demande.ibanSource(),
                 demande.ibanDestination(),
-                new Montant(demande.montant(), Devise.EUR));
+                new Montant(demande.montant()));
 
         // 201 + Location : la création d'une ressource se signale ainsi.
         // C'est typiquement le genre de détail qu'un test de slice verrouille.

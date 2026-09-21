@@ -1,11 +1,8 @@
 package fr.formation.banque.unitaire.demo;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import fr.formation.banque.domaine.Devise;
-import fr.formation.banque.domaine.DeviseIncompatibleException;
 import fr.formation.banque.domaine.Montant;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
@@ -35,8 +32,8 @@ import org.junit.jupiter.api.Test;
 class MontantTest {
 
     @Test
-    @DisplayName("additionne deux montants de même devise")
-    void devrait_additionner_quand_les_devises_sont_identiques() {
+    @DisplayName("additionne deux montants")
+    void devrait_additionner_quand_on_ajoute_deux_montants() {
         // Arrange
         Montant dix = Montant.euros("10.00");
         Montant cinq = Montant.euros("5.50");
@@ -49,22 +46,7 @@ class MontantTest {
     }
 
     @Test
-    @DisplayName("refuse d'additionner deux devises différentes")
-    void devrait_lever_DeviseIncompatibleException_quand_les_devises_different() {
-        Montant euros = Montant.euros("10.00");
-        Montant dollars = Montant.de("10.00", Devise.USD);
-
-        // assertThatThrownBy capture l'exception ET permet d'asserter dessus.
-        // On vérifie le TYPE et le MESSAGE : une exception mal typée ne doit pas
-        // faire passer le test par accident.
-        assertThatThrownBy(() -> euros.plus(dollars))
-                .isInstanceOf(DeviseIncompatibleException.class)
-                .hasMessageContaining("EUR")
-                .hasMessageContaining("USD");
-    }
-
-    @Test
-    @DisplayName("normalise l'échelle : 10 EUR égale 10.00 EUR")
+    @DisplayName("normalise l'échelle : 10 égale 10.00")
     void devrait_normaliser_l_echelle_quand_le_montant_est_construit() {
         // Piège classique de BigDecimal : new BigDecimal("10").equals(new BigDecimal("10.00"))
         // vaut false. Le record normalise l'échelle pour que l'égalité métier
@@ -77,7 +59,7 @@ class MontantTest {
     }
 
     @Test
-    @DisplayName("arrondit au centime supérieur à la construction")
+    @DisplayName("arrondit au centime le plus proche à la construction")
     void devrait_arrondir_au_centime_quand_le_calcul_produit_plus_de_deux_decimales() {
         Montant montant = Montant.euros("1234.56");
 
@@ -88,8 +70,8 @@ class MontantTest {
     }
 
     @Test
-    @DisplayName("compare deux montants de même devise")
-    void devrait_comparer_quand_les_devises_sont_identiques() {
+    @DisplayName("compare deux montants")
+    void devrait_comparer_quand_on_ordonne_deux_montants() {
         Montant petit = Montant.euros("10.00");
         Montant grand = Montant.euros("20.00");
 

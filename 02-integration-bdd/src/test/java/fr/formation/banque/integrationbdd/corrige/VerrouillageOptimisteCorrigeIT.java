@@ -3,8 +3,6 @@ package fr.formation.banque.integrationbdd.corrige;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import fr.formation.banque.domaine.Devise;
-import fr.formation.banque.domaine.TypeCompte;
 import fr.formation.banque.integrationbdd.support.ConfigurationPostgres;
 import fr.formation.banque.persistance.CompteEntity;
 import fr.formation.banque.persistance.CompteJpaRepository;
@@ -49,8 +47,7 @@ class VerrouillageOptimisteCorrigeIT {
     }
 
     private static CompteEntity compte(String iban, String solde) {
-        return new CompteEntity(iban, TypeCompte.STANDARD,
-                new BigDecimal(solde), BigDecimal.ZERO, Devise.EUR);
+        return new CompteEntity(iban, new BigDecimal(solde));
     }
 
     @Test
@@ -116,14 +113,13 @@ class VerrouillageOptimisteCorrigeIT {
     }
 
     @Test
-    @DisplayName("rejette un découvert autorisé négatif via la contrainte CHECK")
-    void devrait_rejeter_quand_le_decouvert_autorise_est_negatif() {
+    @DisplayName("rejette un solde négatif via la contrainte CHECK")
+    void devrait_rejeter_quand_le_solde_est_negatif() {
         // La règle existe DEUX fois : dans le domaine (chapitre 01, testée
         // unitairement) et dans la base (contrainte CHECK). Ce test prouve que
         // le garde-fou de dernier recours est bien en place — utile le jour où
         // une insertion arrive par un script ou un autre service.
-        CompteEntity invalide = new CompteEntity("FR76-CHECK", TypeCompte.STANDARD,
-                new BigDecimal("100.00"), new BigDecimal("-1.00"), Devise.EUR);
+        CompteEntity invalide = new CompteEntity("FR76-CHECK", new BigDecimal("-1.00"));
 
         assertThatExceptionOfType(DataIntegrityViolationException.class)
                 .isThrownBy(() -> transaction.execute(statut -> depot.save(invalide)));

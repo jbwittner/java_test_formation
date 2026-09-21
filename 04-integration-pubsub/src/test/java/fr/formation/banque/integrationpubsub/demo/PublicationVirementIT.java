@@ -73,8 +73,8 @@ class PublicationVirementIT extends SocleIntegrationPubSub {
     @BeforeEach
     void preparer() {
         jpa.deleteAll();
-        comptes.enregistrer(Compte.standard("FR76-SOURCE", Montant.euros("5000.00")));
-        comptes.enregistrer(Compte.standard("FR76-DEST", Montant.euros("0.00")));
+        comptes.enregistrer(new Compte("FR76-SOURCE", Montant.euros("5000.00")));
+        comptes.enregistrer(new Compte("FR76-DEST", Montant.euros("0.00")));
 
         // Créée AVANT la publication : une souscription Pub/Sub ne reçoit que les
         // messages publiés après sa création. C'est la cause n°1 de test
@@ -118,7 +118,6 @@ class PublicationVirementIT extends SocleIntegrationPubSub {
                     assertThat(evenement.ibanDestination()).isEqualTo("FR76-DEST");
                     assertThat(evenement.montant()).isEqualByComparingTo("1000.00");
                     assertThat(evenement.frais()).isEqualByComparingTo("1.00");
-                    assertThat(evenement.devise()).isEqualTo("EUR");
                     assertThat(evenement.dateDeValeur()).isEqualTo(virement.dateDeValeur());
                 });
     }

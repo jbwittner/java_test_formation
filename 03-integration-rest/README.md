@@ -19,7 +19,7 @@ prouve.
 | `demo/VirementControllerTest` | slice `@WebMvcTest`, service mocké | ~0,6 s / 7 tests |
 | `demo/ReponseVirementJsonTest` | slice `@JsonTest` | ~1 s / 3 tests |
 | `demo/VirementBoutEnBoutIT` | `@SpringBootTest` + `RestTestClient` + PostgreSQL | ~4,8 s / 4 tests |
-| `exercice/…ExerciceTest` / `…ExerciceIT` | **exercice 4**, aux deux niveaux | |
+| `exercice/…ExerciceTest` / `…ExerciceIT` | **exercice 4**, aux deux niveaux — [fiche](../docs/exercices/04-validation-rest.md) | |
 | `corrige/` | solutions | |
 
 ## Points clés

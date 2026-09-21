@@ -18,7 +18,6 @@ public record ReponseVirement(
         BigDecimal montant,
         BigDecimal frais,
         BigDecimal totalDebite,
-        String devise,
         LocalDate dateDeValeur) {
 
     public static ReponseVirement depuis(Virement virement) {
@@ -29,7 +28,6 @@ public record ReponseVirement(
                 virement.montant().valeur(),
                 virement.frais().valeur(),
                 virement.totalDebite().valeur(),
-                virement.montant().devise().name(),
                 virement.dateDeValeur());
     }
 }

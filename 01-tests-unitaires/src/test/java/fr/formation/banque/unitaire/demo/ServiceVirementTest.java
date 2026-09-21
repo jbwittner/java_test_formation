@@ -16,7 +16,6 @@ import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.NotificateurVirement;
 import fr.formation.banque.domaine.ServiceVirement;
 import fr.formation.banque.domaine.SoldeInsuffisantException;
-import fr.formation.banque.domaine.TypeCompte;
 import fr.formation.banque.domaine.Virement;
 import java.time.Clock;
 import java.time.Instant;
@@ -82,8 +81,8 @@ class ServiceVirementTest {
                 notificateur);
     }
 
-    private Compte donnerCompte(String iban, TypeCompte type, String solde) {
-        Compte compte = new Compte(iban, type, Montant.euros(solde), Montant.euros("0.00"));
+    private Compte donnerCompte(String iban, String solde) {
+        Compte compte = new Compte(iban, Montant.euros(solde));
         when(comptes.parIban(iban)).thenReturn(Optional.of(compte));
         return compte;
     }
@@ -91,8 +90,8 @@ class ServiceVirementTest {
     @Test
     @DisplayName("débite le montant augmenté des frais et crédite le destinataire")
     void devrait_debiter_montant_et_frais_quand_le_virement_reussit() {
-        Compte source = donnerCompte("FR76-SOURCE", TypeCompte.STANDARD, "5000.00");
-        Compte destination = donnerCompte("FR76-DEST", TypeCompte.STANDARD, "0.00");
+        Compte source = donnerCompte("FR76-SOURCE", "5000.00");
+        Compte destination = donnerCompte("FR76-DEST", "0.00");
 
         Virement virement = service.executer("FR76-SOURCE", "FR76-DEST", MILLE_EUROS);
 
@@ -105,22 +104,10 @@ class ServiceVirementTest {
     }
 
     @Test
-    @DisplayName("exonère de frais un compte premium")
-    void devrait_appliquer_des_frais_nuls_quand_le_compte_source_est_premium() {
-        donnerCompte("FR76-SOURCE", TypeCompte.PREMIUM, "5000.00");
-        donnerCompte("FR76-DEST", TypeCompte.STANDARD, "0.00");
-
-        Virement virement = service.executer("FR76-SOURCE", "FR76-DEST", MILLE_EUROS);
-
-        assertThat(virement.frais()).isEqualTo(Montant.euros("0.00"));
-        assertThat(virement.totalDebite()).isEqualTo(MILLE_EUROS);
-    }
-
-    @Test
     @DisplayName("date le virement au jour même avant l'heure de coupure")
     void devrait_dater_au_jour_meme_quand_l_heure_est_avant_la_coupure() {
-        donnerCompte("FR76-SOURCE", TypeCompte.STANDARD, "5000.00");
-        donnerCompte("FR76-DEST", TypeCompte.STANDARD, "0.00");
+        donnerCompte("FR76-SOURCE", "5000.00");
+        donnerCompte("FR76-DEST", "0.00");
 
         Virement virement = service.executer("FR76-SOURCE", "FR76-DEST", MILLE_EUROS);
 
@@ -132,8 +119,8 @@ class ServiceVirementTest {
     @Test
     @DisplayName("publie un événement décrivant le virement exécuté")
     void devrait_notifier_le_virement_quand_il_reussit() {
-        donnerCompte("FR76-SOURCE", TypeCompte.STANDARD, "5000.00");
-        donnerCompte("FR76-DEST", TypeCompte.STANDARD, "0.00");
+        donnerCompte("FR76-SOURCE", "5000.00");
+        donnerCompte("FR76-DEST", "0.00");
 
         service.executer("FR76-SOURCE", "FR76-DEST", MILLE_EUROS);
 
@@ -151,8 +138,8 @@ class ServiceVirementTest {
     @Test
     @DisplayName("n'enregistre ni ne notifie quand le solde est insuffisant")
     void devrait_ne_rien_enregistrer_quand_le_solde_est_insuffisant() {
-        donnerCompte("FR76-SOURCE", TypeCompte.STANDARD, "100.00");
-        donnerCompte("FR76-DEST", TypeCompte.STANDARD, "0.00");
+        donnerCompte("FR76-SOURCE", "100.00");
+        donnerCompte("FR76-DEST", "0.00");
 
         assertThatExceptionOfType(SoldeInsuffisantException.class)
                 .isThrownBy(() -> service.executer("FR76-SOURCE", "FR76-DEST", MILLE_EUROS));

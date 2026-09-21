@@ -1,7 +1,6 @@
 package fr.formation.banque.api;
 
 import fr.formation.banque.domaine.CompteIntrouvableException;
-import fr.formation.banque.domaine.DeviseIncompatibleException;
 import fr.formation.banque.domaine.SoldeInsuffisantException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *   <li>404 — compte inconnu ;</li>
  *   <li>409 — solde insuffisant : la requête est valide, c'est l'état du compte
  *       qui l'empêche. Un 400 laisserait croire à une erreur de saisie ;</li>
- *   <li>400 — requête malformée ou incohérente (validation, devises, IBAN identiques).</li>
+ *   <li>400 — requête malformée ou incohérente (validation, IBAN identiques).</li>
  * </ul>
  */
 @RestControllerAdvice
@@ -47,11 +46,6 @@ public class GestionnaireErreursApi extends ResponseEntityExceptionHandler {
         ProblemDetail probleme = probleme(HttpStatus.CONFLICT, "Solde insuffisant", erreur.getMessage());
         probleme.setProperty("iban", erreur.iban());
         return probleme;
-    }
-
-    @ExceptionHandler(DeviseIncompatibleException.class)
-    ProblemDetail deviseIncompatible(DeviseIncompatibleException erreur) {
-        return probleme(HttpStatus.BAD_REQUEST, "Devise incompatible", erreur.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -3,26 +3,32 @@
 Domaine métier pur : **aucune dépendance Spring**, aucune base, aucun réseau.
 C'est cette absence de dépendances qui rend les tests instantanés.
 
-## Code de production
+> **Vous n'avez pas besoin de tout lire.** Les exercices 1 et 2 ne demandent que
+> trois classes : `Montant`, `GrilleFrais` et `HorodatageVirement`. Le reste
+> arrive plus tard, quand la démo 3 en a besoin.
 
-| Classe | Rôle | Intérêt pour les tests |
+## Le code, par vagues
+
+| Vague | Classes | Pour quoi faire |
 |---|---|---|
-| `Montant` | value object (`BigDecimal` + devise) | égalité par valeur, arrondi, refus de mélanger les devises |
-| `Compte` | entité : débit, crédit, découvert | cas limites de solde |
-| `GrilleFrais` | barème par paliers, fonction pure | idéal pour `@ParameterizedTest` |
-| `HorodatageVirement` | date de valeur, coupure 16 h, week-ends | `Clock` **injecté** |
-| `ServiceVirement` | orchestration | quoi mocker, quoi ne pas mocker |
-| `CompteRepository`, `NotificateurVirement`, `GenerateurReference` | ports | les seules dépendances légitimes à mocker |
+| 1 | `Montant` | value object (`BigDecimal`) : égalité par valeur, arrondi à 2 décimales — démo 1 |
+| 2 | `Compte`, `SoldeInsuffisantException` | débit, crédit, cas limites de solde — démo 2 |
+| 3 | `GrilleFrais`, `HorodatageVirement` | une fonction pure et une règle dépendant du temps — **exercices 1 et 2** |
+| 4 | `ServiceVirement`, `Virement`, `CompteRepository`, `NotificateurVirement`, `GenerateurReference`, `CompteIntrouvableException` | l'orchestration et ses trois ports : quoi mocker, quoi ne pas mocker — démo 3 |
+
+Les trois **ports** de la vague 4 (`CompteRepository`, `NotificateurVirement`,
+`GenerateurReference`) sont les seules dépendances légitimes à mocker. Tout le
+reste est du domaine pur : l'instancier coûte moins cher que le mocker.
 
 ## Tests
 
 | Classe | Enseignement |
 |---|---|
 | `demo/MontantTest` | AAA, nommage, AssertJ, pièges `BigDecimal` |
-| `demo/CompteTest` | `@Nested`, cas limites, `assertSoftly` |
+| `demo/CompteTest` | `@Nested`, cas limites, `assertSoftly`, `assertThatThrownBy` |
 | `demo/ServiceVirementTest` | mocks de ports, `ArgumentCaptor`, `never()` |
-| `exercice/GrilleFraisExerciceTest` | **exercice 1** — tests paramétrés |
-| `exercice/HorodatageVirementExerciceTest` | **exercice 2** — `Clock.fixed` |
+| `exercice/GrilleFraisExerciceTest` | **exercice 1** — [fiche](../docs/exercices/01-grille-frais.md) |
+| `exercice/HorodatageVirementExerciceTest` | **exercice 2** — [fiche](../docs/exercices/02-horodatage.md) |
 | `corrige/` | solutions commentées |
 
 ## Lancer

@@ -19,7 +19,6 @@ public record EvenementVirement(
         String ibanDestination,
         BigDecimal montant,
         BigDecimal frais,
-        String devise,
         LocalDate dateDeValeur) {
 
     public static EvenementVirement depuis(Virement virement) {
@@ -29,7 +28,6 @@ public record EvenementVirement(
                 virement.ibanDestination(),
                 virement.montant().valeur(),
                 virement.frais().valeur(),
-                virement.montant().devise().name(),
                 virement.dateDeValeur());
     }
 }

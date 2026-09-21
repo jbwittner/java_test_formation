@@ -10,7 +10,7 @@ défini par le domaine au chapitre 01.
 | `CompteEntity` | entité JPA, `@Version` (verrouillage optimiste), séquence |
 | `CompteJpaRepository` | dépôt Spring Data, tri **explicite** |
 | `DepotComptesJpa` | adaptateur entité ↔ domaine |
-| `V1__creation_table_compte.sql` | migration Flyway |
+| `V1__creation_table_compte.sql` | migration Flyway : unicité de l'IBAN, `CHECK (solde >= 0)` |
 
 ## Tests
 
@@ -20,8 +20,8 @@ défini par le domaine au chapitre 01.
 | `demo/CompteJpaRepositoryIT` | slice `@DataJpaTest`, `@AutoConfigureTestDatabase(NONE)` |
 | `demo/RollbackTransactionnelIT` | **ce que le rollback automatique masque** |
 | `demo/MigrationFlywayIT` | tester le schéma livré via `information_schema` |
-| `exercice/VerrouillageOptimisteExerciceIT` | **exercice 3** |
-| `corrige/VerrouillageOptimisteCorrigeIT` | mise à jour perdue, unicité, `CHECK` |
+| `exercice/VerrouillageOptimisteExerciceIT` | **exercice 3** — [fiche](../docs/exercices/03-verrouillage-optimiste.md) |
+| `corrige/VerrouillageOptimisteCorrigeIT` | mise à jour perdue, unicité, `CHECK (solde >= 0)` |
 
 ## Points clés
 

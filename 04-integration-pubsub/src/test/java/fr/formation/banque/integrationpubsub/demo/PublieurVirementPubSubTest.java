@@ -68,7 +68,6 @@ class PublieurVirementPubSubTest {
                 evenementPublie.capture());
         assertThat(evenementPublie.getValue())
                 .returns("VIR-1", EvenementVirement::reference)
-                .returns("EUR", EvenementVirement::devise)
                 .returns(LocalDate.of(2025, 6, 3), EvenementVirement::dateDeValeur);
         assertThat(evenementPublie.getValue().montant()).isEqualByComparingTo("1000.00");
         assertThat(evenementPublie.getValue().frais()).isEqualByComparingTo("1.00");

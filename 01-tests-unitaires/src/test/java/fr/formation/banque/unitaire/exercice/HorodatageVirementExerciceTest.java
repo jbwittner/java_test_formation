@@ -10,42 +10,16 @@ import org.junit.jupiter.api.Test;
 /**
  * EXERCICE 2 — rendre le temps testable.
  *
- * <p><b>Règles implémentées par {@link HorodatageVirement} :</b>
- * <ul>
- *   <li>avant 16 h : date de valeur = aujourd'hui</li>
- *   <li>à partir de 16 h (borne incluse) : date de valeur = jour suivant</li>
- *   <li>samedi et dimanche ne sont jamais des dates de valeur : on reporte au lundi</li>
- * </ul>
+ * <p>Figer l'horloge avec {@link Clock#fixed} pour tester la coupure de 16 h et
+ * le report du week-end, sans jamais dépendre de l'instant d'exécution.
  *
- * <p><b>Consignes</b>
- * <ol>
- *   <li>Retirer le {@code @Disabled}.</li>
- *   <li>Écrire un test pour chacun de ces cas, en figeant l'horloge avec
- *       {@code Clock.fixed(Instant.parse("..."), ZoneId.of("Europe/Paris"))} :
- *       <ul>
- *         <li>mardi 10 h</li>
- *         <li>mardi 15 h 59 min 59 s</li>
- *         <li>mardi 16 h 00 pile</li>
- *         <li>vendredi 17 h</li>
- *         <li>samedi 10 h</li>
- *       </ul>
- *   </li>
- *   <li>Regrouper ensuite ces cas dans un seul {@code @ParameterizedTest}.</li>
- * </ol>
+ * <p>Énoncé complet, checklist, indices et vérification par sabotage :
+ * <b>{@code docs/exercices/02-horodatage.md}</b>
  *
- * <p><b>Attention au fuseau</b> : un {@code Instant} est exprimé en UTC. En juin,
- * Paris est à UTC+2 — {@code 2025-06-03T14:00:00Z} correspond donc à 16 h 00
- * locales. Ne jamais utiliser {@code ZoneId.systemDefault()} dans un test : cela
- * réintroduit la dépendance à l'environnement que l'on cherche à éliminer.
- *
- * <p><b>Question de fin d'exercice</b> : si {@code HorodatageVirement} appelait
- * {@code LocalDateTime.now()} au lieu de recevoir un {@code Clock}, comment
- * testeriez-vous la règle du vendredi 17 h ? Combien de temps le test
- * prendrait-il, et serait-il fiable en intégration continue ?
- *
- * <p>Corrigé : {@code fr.formation.banque.unitaire.corrige.HorodatageVirementCorrigeTest}
+ * <p>Corrigé (en dernier recours) :
+ * {@code fr.formation.banque.unitaire.corrige.HorodatageVirementCorrigeTest}
  */
-@Disabled("TODO exercice 2 — retirer cette annotation puis écrire les tests")
+@Disabled("Exercice 2 — voir docs/exercices/02-horodatage.md, puis retirer cette annotation")
 @DisplayName("EXERCICE 2 — HorodatageVirement")
 class HorodatageVirementExerciceTest {
 

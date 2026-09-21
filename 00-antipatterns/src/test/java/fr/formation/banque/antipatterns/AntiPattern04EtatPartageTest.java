@@ -49,7 +49,7 @@ class AntiPattern04EtatPartageTest {
 
         // Partagé par toutes les méthodes, jamais réinitialisé.
         private static final Compte COMPTE =
-                Compte.standard("FR76-PARTAGE", Montant.euros("1000.00"));
+                new Compte("FR76-PARTAGE", Montant.euros("1000.00"));
 
         @Test
         @DisplayName("retire 400 EUR")
@@ -77,7 +77,7 @@ class AntiPattern04EtatPartageTest {
         @BeforeEach
         void preparerCompte() {
             // Réinitialisé avant CHAQUE test : aucun ordre ne peut les faire échouer.
-            compte = Compte.standard("FR76-ISOLE", Montant.euros("1000.00"));
+            compte = new Compte("FR76-ISOLE", Montant.euros("1000.00"));
         }
 
         @Test

@@ -11,7 +11,6 @@ import java.math.BigDecimal;
  *
  * <p>Barème :
  * <ul>
- *   <li>compte PREMIUM : gratuit, quel que soit le montant</li>
  *   <li>jusqu'à 1 000 inclus : 1,00 forfaitaire</li>
  *   <li>de 1 000 exclu à 10 000 inclus : 0,1 % du montant</li>
  *   <li>au-delà de 10 000 : 15,00 forfaitaire</li>
@@ -28,20 +27,17 @@ public final class GrilleFrais {
     private GrilleFrais() {
     }
 
-    public static Montant calculer(Montant montant, TypeCompte type) {
+    public static Montant calculer(Montant montant) {
         if (!montant.estStrictementPositif()) {
             throw new IllegalArgumentException("Le montant doit être strictement positif : " + montant);
         }
-        if (type == TypeCompte.PREMIUM) {
-            return Montant.zero(montant.devise());
-        }
         BigDecimal valeur = montant.valeur();
         if (valeur.compareTo(PALIER_BAS) <= 0) {
-            return new Montant(FORFAIT_PALIER_BAS, montant.devise());
+            return new Montant(FORFAIT_PALIER_BAS);
         }
         if (valeur.compareTo(PALIER_HAUT) <= 0) {
             return montant.multiplie(TAUX_PALIER_INTERMEDIAIRE);
         }
-        return new Montant(FORFAIT_PALIER_HAUT, montant.devise());
+        return new Montant(FORFAIT_PALIER_HAUT);
     }
 }

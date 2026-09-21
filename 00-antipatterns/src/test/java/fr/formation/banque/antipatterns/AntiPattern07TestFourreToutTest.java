@@ -10,7 +10,6 @@ import fr.formation.banque.domaine.HorodatageVirement;
 import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.ServiceVirement;
 import fr.formation.banque.domaine.SoldeInsuffisantException;
-import fr.formation.banque.domaine.TypeCompte;
 import fr.formation.banque.domaine.Virement;
 import java.time.Clock;
 import java.time.Instant;
@@ -52,8 +51,8 @@ class AntiPattern07TestFourreToutTest {
 
     private static DepotComptes comptesStandard() {
         return new DepotComptes(
-                Compte.standard("FR76-SOURCE", Montant.euros("5000.00")),
-                Compte.standard("FR76-DEST", Montant.euros("0.00")));
+                new Compte("FR76-SOURCE", Montant.euros("5000.00")),
+                new Compte("FR76-DEST", Montant.euros("0.00")));
     }
 
     @Nested
@@ -80,19 +79,19 @@ class AntiPattern07TestFourreToutTest {
 
             // ... et en prime un second scénario, glissé dans le même test.
             DepotComptes autresComptes = new DepotComptes(
-                    Compte.standard("FR76-PAUVRE", Montant.euros("10.00")),
-                    Compte.standard("FR76-DEST", Montant.euros("0.00")));
+                    new Compte("FR76-PAUVRE", Montant.euros("10.00")),
+                    new Compte("FR76-DEST", Montant.euros("0.00")));
             assertThatExceptionOfType(SoldeInsuffisantException.class)
                     .isThrownBy(() -> service(autresComptes)
                             .executer("FR76-PAUVRE", "FR76-DEST", Montant.euros("1000.00")));
 
             // ... et un troisième.
-            DepotComptes comptesPremium = new DepotComptes(
-                    new Compte("FR76-VIP", TypeCompte.PREMIUM, Montant.euros("5000.00"), Montant.euros("0.00")),
-                    Compte.standard("FR76-DEST", Montant.euros("0.00")));
-            assertThat(service(comptesPremium)
-                    .executer("FR76-VIP", "FR76-DEST", Montant.euros("1000.00")).frais())
-                    .isEqualTo(Montant.euros("0.00"));
+            DepotComptes comptesGrosMontant = new DepotComptes(
+                    new Compte("FR76-VIP", Montant.euros("50000.00")),
+                    new Compte("FR76-DEST", Montant.euros("0.00")));
+            assertThat(service(comptesGrosMontant)
+                    .executer("FR76-VIP", "FR76-DEST", Montant.euros("20000.00")).frais())
+                    .isEqualTo(Montant.euros("15.00"));
         }
     }
 
@@ -133,8 +132,8 @@ class AntiPattern07TestFourreToutTest {
         @DisplayName("refuse le virement quand le solde est insuffisant")
         void devrait_refuser_quand_le_solde_est_insuffisant() {
             DepotComptes comptes = new DepotComptes(
-                    Compte.standard("FR76-PAUVRE", Montant.euros("10.00")),
-                    Compte.standard("FR76-DEST", Montant.euros("0.00")));
+                    new Compte("FR76-PAUVRE", Montant.euros("10.00")),
+                    new Compte("FR76-DEST", Montant.euros("0.00")));
 
             assertThatExceptionOfType(SoldeInsuffisantException.class)
                     .isThrownBy(() -> service(comptes)
@@ -142,16 +141,16 @@ class AntiPattern07TestFourreToutTest {
         }
 
         @Test
-        @DisplayName("exonère de frais un compte premium")
-        void devrait_exonerer_de_frais_quand_le_compte_source_est_premium() {
+        @DisplayName("applique le forfait du palier haut au-delà de 10 000")
+        void devrait_appliquer_le_forfait_haut_quand_le_montant_depasse_dix_mille() {
             DepotComptes comptes = new DepotComptes(
-                    new Compte("FR76-VIP", TypeCompte.PREMIUM, Montant.euros("5000.00"), Montant.euros("0.00")),
-                    Compte.standard("FR76-DEST", Montant.euros("0.00")));
+                    new Compte("FR76-VIP", Montant.euros("50000.00")),
+                    new Compte("FR76-DEST", Montant.euros("0.00")));
 
             Virement virement = service(comptes)
-                    .executer("FR76-VIP", "FR76-DEST", Montant.euros("1000.00"));
+                    .executer("FR76-VIP", "FR76-DEST", Montant.euros("20000.00"));
 
-            assertThat(virement.frais()).isEqualTo(Montant.euros("0.00"));
+            assertThat(virement.frais()).isEqualTo(Montant.euros("15.00"));
         }
     }
 }

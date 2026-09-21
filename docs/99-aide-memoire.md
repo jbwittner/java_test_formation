@@ -70,6 +70,26 @@ assertSoftly(verif -> {            // évalue TOUT, rapporte tous les écarts
 **Piège `BigDecimal`** : `isEqualTo` compare l'échelle, `10.0` ≠ `10.00`.
 Utiliser `isEqualByComparingTo`.
 
+## Tests paramétrés — quelle source choisir
+
+```java
+@ParameterizedTest(name = "{0} EUR -> {1} EUR")   // sans `name`, le rapport dit « [1] », « [2] »
+@CsvSource({"1000.00, 1.00", "1000.01, 1.00"})    // cas réductibles à des chaînes
+void devrait_...(String montant, String attendu) { }
+
+@ValueSource(strings = {"0.00", "-10.00"})        // un seul paramètre
+@EnumSource(MonEnum.class)                        // toutes les valeurs d'un enum,
+                                                  // y compris celles ajoutées plus tard
+@MethodSource("mesCas")                           // objets réels, cas nommés
+static Stream<Arguments> mesCas() {
+    return Stream.of(Arguments.of("libellé du cas", Montant.euros("2000.00"), Montant.euros("2.00")));
+}
+```
+
+Règle pratique : `@CsvSource` par défaut, `@MethodSource` dès qu'un paramètre
+n'est pas une chaîne ou un nombre, `@EnumSource` pour couvrir mécaniquement un
+enum. Les cas d'erreur restent des `@Test` : leur forme est différente.
+
 ## Mockito
 
 ```java

@@ -1,13 +1,9 @@
 package fr.formation.banque.persistance;
 
 import fr.formation.banque.domaine.Compte;
-import fr.formation.banque.domaine.Devise;
 import fr.formation.banque.domaine.Montant;
-import fr.formation.banque.domaine.TypeCompte;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,19 +43,8 @@ public class CompteEntity {
     @Column(nullable = false, unique = true, length = 34)
     private String iban;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 16)
-    private TypeCompte type;
-
     @Column(name = "solde", nullable = false, precision = 19, scale = 2)
     private BigDecimal solde;
-
-    @Column(name = "decouvert_autorise", nullable = false, precision = 19, scale = 2)
-    private BigDecimal decouvertAutorise;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 3)
-    private Devise devise;
 
     @Version
     @Column(nullable = false)
@@ -69,36 +54,22 @@ public class CompteEntity {
         // requis par JPA
     }
 
-    public CompteEntity(String iban, TypeCompte type, BigDecimal solde,
-                        BigDecimal decouvertAutorise, Devise devise) {
+    public CompteEntity(String iban, BigDecimal solde) {
         this.iban = iban;
-        this.type = type;
         this.solde = solde;
-        this.decouvertAutorise = decouvertAutorise;
-        this.devise = devise;
     }
 
     public static CompteEntity depuisDomaine(Compte compte) {
-        return new CompteEntity(
-                compte.iban(),
-                compte.type(),
-                compte.solde().valeur(),
-                compte.decouvertAutorise().valeur(),
-                compte.solde().devise());
+        return new CompteEntity(compte.iban(), compte.solde().valeur());
     }
 
     public Compte versDomaine() {
-        return new Compte(iban, type,
-                new Montant(solde, devise),
-                new Montant(decouvertAutorise, devise));
+        return new Compte(iban, new Montant(solde));
     }
 
     /** Reporte l'état du domaine sur la ligne existante (sans toucher à l'identité). */
     public void mettreAJourDepuis(Compte compte) {
-        this.type = compte.type();
         this.solde = compte.solde().valeur();
-        this.decouvertAutorise = compte.decouvertAutorise().valeur();
-        this.devise = compte.solde().devise();
     }
 
     public Long id() {
@@ -109,24 +80,12 @@ public class CompteEntity {
         return iban;
     }
 
-    public TypeCompte type() {
-        return type;
-    }
-
     public BigDecimal solde() {
         return solde;
     }
 
     public void changerSolde(BigDecimal solde) {
         this.solde = solde;
-    }
-
-    public BigDecimal decouvertAutorise() {
-        return decouvertAutorise;
-    }
-
-    public Devise devise() {
-        return devise;
     }
 
     public Long version() {

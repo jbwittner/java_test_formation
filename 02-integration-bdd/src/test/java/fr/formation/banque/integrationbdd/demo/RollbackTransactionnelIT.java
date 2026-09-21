@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import fr.formation.banque.domaine.Devise;
-import fr.formation.banque.domaine.TypeCompte;
 import fr.formation.banque.integrationbdd.support.ConfigurationPostgres;
 import fr.formation.banque.persistance.CompteEntity;
 import fr.formation.banque.persistance.CompteJpaRepository;
@@ -55,8 +53,7 @@ class RollbackTransactionnelIT {
     private CompteJpaRepository depot;
 
     private static CompteEntity compte(String iban, String solde) {
-        return new CompteEntity(iban, TypeCompte.STANDARD,
-                new BigDecimal(solde), BigDecimal.ZERO, Devise.EUR);
+        return new CompteEntity(iban, new BigDecimal(solde));
     }
 
     @Test

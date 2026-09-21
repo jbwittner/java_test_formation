@@ -24,7 +24,7 @@ Un bon test unitaire est :
 @DisplayName("refuse un débit d'un centime de plus que le solde")
 void devrait_lever_SoldeInsuffisantException_quand_le_debit_depasse_le_solde() {
     // Arrange — préparer le contexte
-    Compte compte = Compte.standard("FR76-SOURCE", Montant.euros("100.00"));
+    Compte compte = new Compte("FR76-SOURCE", Montant.euros("100.00"));
 
     // Act — une seule action, celle qu'on teste
     // Assert — vérifier le résultat ET l'état
@@ -88,7 +88,7 @@ assertThat(virement.frais()).isEqualTo(Montant.euros("1.00"));
 
 // MAUVAIS — le test rejoue la formule de production
 assertThat(virement.frais())
-        .isEqualTo(GrilleFrais.calculer(montant, TypeCompte.STANDARD));
+        .isEqualTo(GrilleFrais.calculer(montant));
 ```
 
 La seconde version passe même si la formule est fausse : elle ne compare que le

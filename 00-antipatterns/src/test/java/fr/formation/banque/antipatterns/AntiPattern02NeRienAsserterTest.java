@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import fr.formation.banque.domaine.GrilleFrais;
 import fr.formation.banque.domaine.Montant;
-import fr.formation.banque.domaine.TypeCompte;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ class AntiPattern02NeRienAsserterTest {
         @Test
         @DisplayName("vérifie seulement que le résultat n'est pas nul")
         void testCalculFrais() {
-            Montant frais = GrilleFrais.calculer(Montant.euros("5000.00"), TypeCompte.STANDARD);
+            Montant frais = GrilleFrais.calculer(Montant.euros("5000.00"));
 
             // GrilleFrais ne renvoie jamais null : cette assertion est toujours vraie.
             // Elle resterait verte si le barème renvoyait 0, 1 000 000, ou la mauvaise devise.
@@ -43,10 +42,10 @@ class AntiPattern02NeRienAsserterTest {
 
         @Test
         @DisplayName("appelle le code sans rien vérifier du tout")
-        void testCalculFraisPremium() {
+        void testCalculFraisPalierBas() {
             // Aucune assertion : ce test ne détecte que les exceptions.
             // Il contribue pourtant à la couverture, ce qui le rend dangereux.
-            GrilleFrais.calculer(Montant.euros("5000.00"), TypeCompte.PREMIUM);
+            GrilleFrais.calculer(Montant.euros("500.00"));
         }
     }
 
@@ -57,17 +56,17 @@ class AntiPattern02NeRienAsserterTest {
         @Test
         @DisplayName("assère la valeur exacte des frais")
         void devrait_appliquer_zero_virgule_un_pourcent_quand_le_montant_est_de_5000_euros() {
-            Montant frais = GrilleFrais.calculer(Montant.euros("5000.00"), TypeCompte.STANDARD);
+            Montant frais = GrilleFrais.calculer(Montant.euros("5000.00"));
 
             assertThat(frais).isEqualTo(Montant.euros("5.00"));
         }
 
         @Test
-        @DisplayName("assère l'exonération premium, devise comprise")
-        void devrait_exonerer_quand_le_compte_est_premium() {
-            Montant frais = GrilleFrais.calculer(Montant.euros("5000.00"), TypeCompte.PREMIUM);
+        @DisplayName("assère le forfait exact du palier bas")
+        void devrait_appliquer_le_forfait_quand_le_montant_est_dans_le_palier_bas() {
+            Montant frais = GrilleFrais.calculer(Montant.euros("500.00"));
 
-            assertThat(frais).isEqualTo(Montant.euros("0.00"));
+            assertThat(frais).isEqualTo(Montant.euros("1.00"));
         }
     }
 }

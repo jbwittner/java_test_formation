@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import fr.formation.banque.domaine.Compte;
 import fr.formation.banque.domaine.CompteRepository;
 import fr.formation.banque.domaine.Montant;
-import fr.formation.banque.domaine.TypeCompte;
 import fr.formation.banque.integrationrest.support.ConfigurationPostgres;
 import fr.formation.banque.persistance.CompteJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,9 +79,8 @@ class VirementBoutEnBoutIT {
     @BeforeEach
     void preparerLesComptes() {
         jpa.deleteAll();
-        comptes.enregistrer(new Compte("FR76-SOURCE", TypeCompte.STANDARD,
-                Montant.euros("5000.00"), Montant.euros("0.00")));
-        comptes.enregistrer(Compte.standard("FR76-DEST", Montant.euros("0.00")));
+        comptes.enregistrer(new Compte("FR76-SOURCE", Montant.euros("5000.00")));
+        comptes.enregistrer(new Compte("FR76-DEST", Montant.euros("0.00")));
     }
 
     @Test
@@ -150,7 +148,6 @@ class VirementBoutEnBoutIT {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.iban").isEqualTo("FR76-SOURCE")
-                .jsonPath("$.solde").isEqualTo(5000.00)
-                .jsonPath("$.devise").isEqualTo("EUR");
+                .jsonPath("$.solde").isEqualTo(5000.00);
     }
 }

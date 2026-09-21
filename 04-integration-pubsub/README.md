@@ -7,7 +7,7 @@
 
 | Élément | Rôle |
 |---|---|
-| `EvenementVirement` | charge utile JSON — **contrat inter-applications** |
+| `EvenementVirement` | charge utile JSON — **contrat inter-applications** : renommer un champ est une rupture |
 | `PublieurVirementPubSub` | adaptateur sortant du port `NotificateurVirement` |
 | `AbonneVirement` | adaptateur entrant : `ack` / `nack`, idempotence |
 | `VirementRecuEntity` | journal d'idempotence (clé primaire = référence) |
@@ -21,7 +21,7 @@
 | `demo/PublieurVirementPubSubTest` | version unitaire (mock) — **et ses limites** |
 | `demo/PublicationVirementIT` | flux sortant, souscription de contrôle, Awaitility |
 | `demo/ConsommationVirementIT` | flux entrant, redélivrance, idempotence |
-| `exercice/VirementCompletExerciceIT` | **exercice 5** — chaîne complète |
+| `exercice/VirementCompletExerciceIT` | **exercice 5** — [fiche](../docs/exercices/05-chaine-complete.md) |
 | `corrige/VirementCompletCorrigeIT` | HTTP → PostgreSQL → Pub/Sub |
 
 ## Points clés

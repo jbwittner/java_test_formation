@@ -3,8 +3,9 @@
 Support de formation pratique : un projet Maven multi-modules, un module par
 chapitre, entièrement exécutable.
 
-Domaine métier fil rouge : une **banque** — comptes, virements, frais, découvert,
-date de valeur, événements.
+Domaine métier fil rouge : une **banque**, volontairement réduite — comptes,
+virements, frais, date de valeur, événements. Quatre classes métier suffisent à
+porter tout le contenu pédagogique.
 
 ---
 
@@ -29,6 +30,10 @@ plusieurs minutes.
 ## Démarrage
 
 ```bash
+bash outils/verifier-environnement.sh   # préflight : JDK, Docker, images, suite unitaire
+```
+
+```bash
 ./mvnw test      # tests unitaires seuls  — ~7 s, aucun Docker
 ./mvnw verify    # suite complète         — ~34 s, Docker requis
 ```
@@ -37,15 +42,29 @@ Ces deux commandes doivent être vertes sur un dépôt fraîchement cloné.
 
 ---
 
+## Deux modes d'usage
+
+| Mode | Pour qui | Point d'entrée |
+|---|---|---|
+| **Encadré** | formateur + groupe | ce README, puis les modules dans l'ordre ci-dessous |
+| **Autonome** | seul, à son rythme | **[docs/00-parcours-autonome.md](docs/00-parcours-autonome.md)** |
+
+Le mode autonome ajoute, pour chaque exercice, une fiche complète : énoncé,
+checklist des cas attendus, indices progressifs et **vérification par sabotage**
+— la méthode qui permet de savoir si ses tests valent quelque chose sans ouvrir
+le corrigé.
+
+---
+
 ## Parcours
 
-| Module | Sujet | Ce qu'on y apprend |
-|---|---|---|
-| [`01-tests-unitaires`](01-tests-unitaires) | Domaine pur, **zéro Spring** | AAA, nommage, AssertJ, tests paramétrés, `Clock` injecté, quoi mocker |
-| [`00-antipatterns`](00-antipatterns) | 10 mauvais tests et leur correction | ce qu'il ne faut pas faire, et pourquoi |
-| [`02-integration-bdd`](02-integration-bdd) | JPA + PostgreSQL (Testcontainers) | `@DataJpaTest` vs `@SpringBootTest`, rollback, verrouillage optimiste, migrations |
-| [`03-integration-rest`](03-integration-rest) | Contrôleur REST | `@WebMvcTest` vs bout en bout, `MockMvcTester`, `RestTestClient`, `@JsonTest` |
-| [`04-integration-pubsub`](04-integration-pubsub) | Google Cloud Pub/Sub | émulateur, `@DynamicPropertySource`, Awaitility, idempotence |
+| Module | Sujet | Ce qu'on y apprend | Docker | Durée |
+|---|---|---|---|---|
+| [`01-tests-unitaires`](01-tests-unitaires) | Domaine pur, **zéro Spring** | AAA, nommage, AssertJ, tests paramétrés, `Clock` injecté, quoi mocker | non | 1 h 30 |
+| [`00-antipatterns`](00-antipatterns) | 10 mauvais tests et leur correction | ce qu'il ne faut pas faire, et pourquoi | non | 45 min |
+| [`02-integration-bdd`](02-integration-bdd) | JPA + PostgreSQL (Testcontainers) | `@DataJpaTest` vs `@SpringBootTest`, rollback, verrouillage optimiste, migrations | oui | 1 h 30 |
+| [`03-integration-rest`](03-integration-rest) | Contrôleur REST | `@WebMvcTest` vs bout en bout, `MockMvcTester`, `RestTestClient`, `@JsonTest` | oui | 1 h 30 |
+| [`04-integration-pubsub`](04-integration-pubsub) | Google Cloud Pub/Sub | émulateur, `@DynamicPropertySource`, Awaitility, idempotence | oui | 1 h 30 |
 
 Ordre conseillé en formation : **01 → 00 → 02 → 03 → 04**.
 
@@ -53,6 +72,7 @@ Ordre conseillé en formation : **01 → 00 → 02 → 03 → 04**.
 
 | Fiche | Contenu |
 |---|---|
+| [0 — Parcours autonome](docs/00-parcours-autonome.md) | **se former seul** : méthode, ordre, budget temps, que faire quand on bloque |
 | [1 — Pyramide et vocabulaire](docs/01-pyramide-et-vocabulaire.md) | unitaire vs intégration, mock/stub/fake, chiffres mesurés |
 | [2 — Un bon test unitaire](docs/02-bon-test-unitaire.md) | AAA, nommage, bornes, couverture |
 | [3 — Un bon test d'intégration](docs/03-bon-test-integration.md) | périmètre, isolation, attente, piège du rollback |
@@ -73,16 +93,21 @@ src/test/java/fr/formation/banque/<chapitre>/
 ```
 
 Les classes `exercice/` sont désactivées : le build reste vert dès le clone.
-Pour travailler un exercice, retirer le `@Disabled` et suivre les consignes du
-Javadoc de la classe.
+Pour travailler un exercice, retirer le `@Disabled` et suivre sa **fiche** dans
+[`docs/exercices/`](docs/exercices) — le Javadoc de la classe n'en donne que le
+résumé et le lien.
 
-| Exercice | Module | Sujet |
-|---|---|---|
-| 1 | 01 | tests paramétrés sur le barème de frais |
-| 2 | 01 | rendre le temps déterministe (`Clock`) |
-| 3 | 02 | verrouillage optimiste et contraintes de base |
-| 4 | 03 | validation et refus métier, slice **et** bout en bout |
-| 5 | 04 | chaîne complète HTTP → PostgreSQL → Pub/Sub |
+| Exercice | Module | Sujet | Fiche |
+|---|---|---|---|
+| 1 | 01 | tests paramétrés sur le barème de frais | [01-grille-frais](docs/exercices/01-grille-frais.md) |
+| 2 | 01 | rendre le temps déterministe (`Clock`) | [02-horodatage](docs/exercices/02-horodatage.md) |
+| 3 | 02 | verrouillage optimiste et contraintes de base | [03-verrouillage-optimiste](docs/exercices/03-verrouillage-optimiste.md) |
+| 4 | 03 | validation et refus métier, slice **et** bout en bout | [04-validation-rest](docs/exercices/04-validation-rest.md) |
+| 5 | 04 | chaîne complète HTTP → PostgreSQL → Pub/Sub | [05-chaine-complete](docs/exercices/05-chaine-complete.md) |
+
+Chaque fiche contient l'énoncé, une checklist des cas attendus, des indices
+progressifs, et la **vérification par sabotage** : les lignes exactes à casser
+dans le code de production pour prouver que vos tests détectent une régression.
 
 ## Convention de nommage
 

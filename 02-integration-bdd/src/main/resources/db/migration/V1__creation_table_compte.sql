@@ -9,16 +9,13 @@
 CREATE SEQUENCE compte_seq INCREMENT BY 50 START WITH 1;
 
 CREATE TABLE compte (
-    id                 BIGINT         PRIMARY KEY,
-    iban               VARCHAR(34)    NOT NULL,
-    type               VARCHAR(16)    NOT NULL,
-    solde              NUMERIC(19, 2) NOT NULL,
-    decouvert_autorise NUMERIC(19, 2) NOT NULL,
-    devise             VARCHAR(3)     NOT NULL,
-    version            BIGINT         NOT NULL DEFAULT 0,
+    id      BIGINT         PRIMARY KEY,
+    iban    VARCHAR(34)    NOT NULL,
+    solde   NUMERIC(19, 2) NOT NULL,
+    version BIGINT         NOT NULL DEFAULT 0,
 
     CONSTRAINT compte_iban_unique UNIQUE (iban),
-    CONSTRAINT compte_decouvert_positif CHECK (decouvert_autorise >= 0)
+    CONSTRAINT compte_solde_positif CHECK (solde >= 0)
 );
 
 COMMENT ON COLUMN compte.version IS 'Verrouillage optimiste (@Version cote JPA)';

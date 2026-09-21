@@ -51,7 +51,7 @@ class ConsommationVirementIT extends SocleIntegrationPubSub {
     private static EvenementVirement evenement(String reference) {
         return new EvenementVirement(reference, "FR76-SOURCE", "FR76-DEST",
                 new BigDecimal("1000.00"), new BigDecimal("1.00"),
-                "EUR", LocalDate.of(2025, 6, 3));
+                LocalDate.of(2025, 6, 3));
     }
 
     @Test

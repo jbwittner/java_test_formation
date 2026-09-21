@@ -42,7 +42,7 @@ public class ServiceVirement {
         Compte source = charger(ibanSource);
         Compte destination = charger(ibanDestination);
 
-        Montant frais = GrilleFrais.calculer(montant, source.type());
+        Montant frais = GrilleFrais.calculer(montant);
 
         // Le débit est tenté AVANT le crédit : si le solde est insuffisant,
         // l'exception remonte et aucun compte n'a été modifié.

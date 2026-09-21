@@ -61,8 +61,8 @@ class AntiPattern08MocksSurSpecifiesTest {
         void testVirementInteractions() {
             CompteRepository comptes = mock(CompteRepository.class);
             NotificateurVirement notificateur = mock(NotificateurVirement.class);
-            Compte source = Compte.standard("FR76-SOURCE", Montant.euros("5000.00"));
-            Compte destination = Compte.standard("FR76-DEST", Montant.euros("0.00"));
+            Compte source = new Compte("FR76-SOURCE", Montant.euros("5000.00"));
+            Compte destination = new Compte("FR76-DEST", Montant.euros("0.00"));
             when(comptes.parIban("FR76-SOURCE")).thenReturn(Optional.of(source));
             when(comptes.parIban("FR76-DEST")).thenReturn(Optional.of(destination));
 
@@ -95,8 +95,8 @@ class AntiPattern08MocksSurSpecifiesTest {
             // Fake plutôt que mock : on assère sur ce qui a été RANGÉ,
             // pas sur la façon dont on l'a rangé.
             DepotComptes comptes = new DepotComptes(
-                    Compte.standard("FR76-SOURCE", Montant.euros("5000.00")),
-                    Compte.standard("FR76-DEST", Montant.euros("0.00")));
+                    new Compte("FR76-SOURCE", Montant.euros("5000.00")),
+                    new Compte("FR76-DEST", Montant.euros("0.00")));
 
             new ServiceVirement(comptes, new HorodatageVirement(HORLOGE), () -> "VIR-1", v -> { })
                     .executer("FR76-SOURCE", "FR76-DEST", MILLE);
@@ -111,8 +111,8 @@ class AntiPattern08MocksSurSpecifiesTest {
         @DisplayName("vérifie la seule interaction qui fait partie du contrat")
         void devrait_publier_une_notification_quand_le_virement_reussit() {
             DepotComptes comptes = new DepotComptes(
-                    Compte.standard("FR76-SOURCE", Montant.euros("5000.00")),
-                    Compte.standard("FR76-DEST", Montant.euros("0.00")));
+                    new Compte("FR76-SOURCE", Montant.euros("5000.00")),
+                    new Compte("FR76-DEST", Montant.euros("0.00")));
             NotificateurVirement notificateur = mock(NotificateurVirement.class);
 
             new ServiceVirement(comptes, new HorodatageVirement(HORLOGE), () -> "VIR-1", notificateur)

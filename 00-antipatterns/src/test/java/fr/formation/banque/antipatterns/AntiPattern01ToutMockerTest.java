@@ -12,7 +12,6 @@ import fr.formation.banque.domaine.HorodatageVirement;
 import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.NotificateurVirement;
 import fr.formation.banque.domaine.ServiceVirement;
-import fr.formation.banque.domaine.TypeCompte;
 import fr.formation.banque.domaine.Virement;
 import java.time.Clock;
 import java.time.Instant;
@@ -54,11 +53,10 @@ class AntiPattern01ToutMockerTest {
             CompteRepository comptes = mock(CompteRepository.class);
             NotificateurVirement notificateur = mock(NotificateurVirement.class);
 
-            // Le domaine est mocké. Le test décide du solde, du type de compte,
-            // et ne vérifie donc RIEN du comportement réel de Compte.
+            // Le domaine est mocké. Le test décide de tout ce que renvoient les
+            // comptes, et ne vérifie donc RIEN du comportement réel de Compte.
             Compte source = mock(Compte.class);
             Compte destination = mock(Compte.class);
-            when(source.type()).thenReturn(TypeCompte.STANDARD);
             when(comptes.parIban("FR76-SOURCE")).thenReturn(Optional.of(source));
             when(comptes.parIban("FR76-DEST")).thenReturn(Optional.of(destination));
 
@@ -74,8 +72,8 @@ class AntiPattern01ToutMockerTest {
             verify(destination).crediter(MILLE);
             assertThat(virement).isNotNull();
 
-            // Pire : ce test passe même si le compte source est à découvert
-            // interdit, puisque le mock ne lève jamais SoldeInsuffisantException.
+            // Pire : ce test passe même si le compte source est vide, puisque
+            // le mock ne lève jamais SoldeInsuffisantException.
         }
     }
 
@@ -87,9 +85,8 @@ class AntiPattern01ToutMockerTest {
         @DisplayName("utilise de vrais comptes : les règles sont réellement exercées")
         void devrait_debiter_le_montant_et_les_frais_quand_le_solde_suffit() {
             // Un fake en mémoire pour le port, des objets réels pour le domaine.
-            Compte source = new Compte("FR76-SOURCE", TypeCompte.STANDARD,
-                    Montant.euros("5000.00"), Montant.euros("0.00"));
-            Compte destination = Compte.standard("FR76-DEST", Montant.euros("0.00"));
+            Compte source = new Compte("FR76-SOURCE", Montant.euros("5000.00"));
+            Compte destination = new Compte("FR76-DEST", Montant.euros("0.00"));
             DepotComptes comptes = new DepotComptes(source, destination);
 
             ServiceVirement service = new ServiceVirement(

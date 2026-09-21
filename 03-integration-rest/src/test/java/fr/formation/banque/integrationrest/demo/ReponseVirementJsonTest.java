@@ -48,7 +48,7 @@ class ReponseVirementJsonTest {
     }
 
     @Test
-    @DisplayName("sérialise les montants avec deux décimales et la devise")
+    @DisplayName("sérialise les montants avec deux décimales")
     void devrait_serialiser_les_montants_avec_deux_decimales() throws Exception {
         ReponseVirement reponse = ReponseVirement.depuis(new Virement(
                 "VIR-1", "FR76-SOURCE", "FR76-DEST",
@@ -58,7 +58,7 @@ class ReponseVirementJsonTest {
         assertThat(reponseJson.write(reponse))
                 .extractingJsonPathNumberValue("$.montant").isEqualTo(1000.50);
         assertThat(reponseJson.write(reponse))
-                .extractingJsonPathStringValue("$.devise").isEqualTo("EUR");
+                .extractingJsonPathNumberValue("$.totalDebite").isEqualTo(1001.50);
     }
 
     @Test

@@ -48,8 +48,8 @@ class AntiPattern03ThreadSleepTest {
 
     private static ServiceVirement service(NotificateurAsynchrone notificateur) {
         DepotComptes comptes = new DepotComptes(
-                Compte.standard("FR76-SOURCE", Montant.euros("5000.00")),
-                Compte.standard("FR76-DEST", Montant.euros("0.00")));
+                new Compte("FR76-SOURCE", Montant.euros("5000.00")),
+                new Compte("FR76-DEST", Montant.euros("0.00")));
         return new ServiceVirement(comptes, new HorodatageVirement(HORLOGE), () -> "VIR-1", notificateur);
     }
 

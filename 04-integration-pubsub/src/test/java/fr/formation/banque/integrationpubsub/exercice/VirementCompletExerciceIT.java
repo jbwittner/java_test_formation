@@ -20,54 +20,20 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 /**
  * EXERCICE 5 — la chaîne complète : HTTP → PostgreSQL → Pub/Sub.
  *
- * <p><b>Objectif</b> : un {@code POST /api/virements} doit produire trois effets.
- * Les trois doivent être vérifiés, et pas de la même façon :
- * <ol>
- *   <li>une réponse HTTP 201 avec les frais calculés — <b>synchrone</b> ;</li>
- *   <li>les soldes mis à jour en base — <b>synchrone</b>, assertion directe ;</li>
- *   <li>un événement publié sur le topic — <b>asynchrone</b>, donc Awaitility.</li>
- * </ol>
+ * <p>Un {@code POST /api/virements} produit trois effets : une réponse 201, deux
+ * soldes en base (synchrones, assertion directe) et un événement publié
+ * (asynchrone, donc Awaitility — jamais {@code Thread.sleep}).
  *
- * <p><b>Consignes</b>
- * <ol>
- *   <li>Retirer le {@code @Disabled}.</li>
- *   <li>Créer une souscription de contrôle sur {@code virements-executes} dans
- *       le {@code @BeforeEach}, et la vider — sinon le test lit les messages
- *       laissés par le test précédent.</li>
- *   <li>Écrire le test du parcours nominal (les trois effets).</li>
- *   <li>Écrire le test du refus : 409, aucun solde modifié, <b>et aucun
- *       événement publié</b>.</li>
- * </ol>
+ * <p>⚠️ La souscription de contrôle doit être créée dans le {@code @BeforeEach} :
+ * une souscription ne reçoit que les messages publiés après sa création.
  *
- * <p><b>⚠️ Trois pièges classiques</b>
- * <ol>
- *   <li><b>Souscription créée trop tard</b> : une souscription ne reçoit que les
- *       messages publiés APRÈS sa création. Si elle est créée dans le test plutôt
- *       que dans le {@code @BeforeEach}, rien n'arrive jamais.</li>
- *   <li><b>Consommateur concurrent</b> : l'application consomme déjà
- *       {@code virements-executes-journal}. Une souscription distribue chaque
- *       message à UN seul consommateur — d'où la souscription de contrôle
- *       dédiée au test.</li>
- *   <li><b>{@code Thread.sleep}</b> pour attendre le message. Utiliser
- *       {@code await().atMost(...).untilAsserted(...)}. Pour prouver une
- *       <b>absence</b>, {@code await().during(...)} laisse au message une vraie
- *       chance d'arriver avant de conclure.</li>
- * </ol>
+ * <p>Énoncé complet, checklist, indices et vérification par sabotage :
+ * <b>{@code docs/exercices/05-chaine-complete.md}</b>
  *
- * <p><b>Questions de fin d'exercice</b>
- * <ol>
- *   <li>Comparer la durée de cette classe à celle de
- *       {@code PublieurVirementPubSubTest} (unitaire, mock). Quel rapport ?</li>
- *   <li>{@code PublieurVirementPubSubTest} aurait-il détecté l'absence du
- *       convertisseur JSON ({@code PubSubMessageConversionException}) ? Pourquoi ?</li>
- *   <li>Combien de tests de ce niveau une équipe peut-elle raisonnablement
- *       maintenir dans une suite exécutée à chaque commit ?</li>
- * </ol>
- *
- * <p>Corrigé :
+ * <p>Corrigé (en dernier recours) :
  * {@code fr.formation.banque.integrationpubsub.corrige.VirementCompletCorrigeIT}
  */
-@Disabled("TODO exercice 5 — retirer cette annotation puis écrire les tests")
+@Disabled("Exercice 5 — voir docs/exercices/05-chaine-complete.md, puis retirer cette annotation")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
 @DisplayName("EXERCICE 5 — chaîne complète HTTP → PostgreSQL → Pub/Sub")
@@ -94,8 +60,8 @@ class VirementCompletExerciceIT extends SocleIntegrationPubSub {
     @BeforeEach
     void preparer() {
         jpa.deleteAll();
-        comptes.enregistrer(Compte.standard("FR76-SOURCE", Montant.euros("5000.00")));
-        comptes.enregistrer(Compte.standard("FR76-DEST", Montant.euros("0.00")));
+        comptes.enregistrer(new Compte("FR76-SOURCE", Montant.euros("5000.00")));
+        comptes.enregistrer(new Compte("FR76-DEST", Montant.euros("0.00")));
 
         // TODO : creer SOUSCRIPTION_DE_CONTROLE sur le topic "virements-executes"
         //        si elle n'existe pas, puis la vider (pull + ack).

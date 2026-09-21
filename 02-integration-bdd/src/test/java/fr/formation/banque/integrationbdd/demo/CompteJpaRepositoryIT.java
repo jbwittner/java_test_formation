@@ -2,8 +2,6 @@ package fr.formation.banque.integrationbdd.demo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import fr.formation.banque.domaine.Devise;
-import fr.formation.banque.domaine.TypeCompte;
 import fr.formation.banque.integrationbdd.support.ConfigurationPostgres;
 import fr.formation.banque.persistance.CompteEntity;
 import fr.formation.banque.persistance.CompteJpaRepository;
@@ -62,8 +60,7 @@ class CompteJpaRepositoryIT {
     private TestEntityManager entityManager;
 
     private static CompteEntity compte(String iban, String solde) {
-        return new CompteEntity(iban, TypeCompte.STANDARD,
-                new BigDecimal(solde), BigDecimal.ZERO, Devise.EUR);
+        return new CompteEntity(iban, new BigDecimal(solde));
     }
 
     @Test

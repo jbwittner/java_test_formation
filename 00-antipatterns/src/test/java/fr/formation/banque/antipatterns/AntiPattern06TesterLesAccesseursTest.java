@@ -4,10 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import fr.formation.banque.domaine.Compte;
-import fr.formation.banque.domaine.Devise;
 import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.SoldeInsuffisantException;
-import fr.formation.banque.domaine.TypeCompte;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -42,23 +40,19 @@ class AntiPattern06TesterLesAccesseursTest {
         @Test
         @DisplayName("vérifie que le constructeur affecte bien ses champs")
         void testGetters() {
-            Compte compte = new Compte("FR76-A", TypeCompte.PREMIUM,
-                    Montant.euros("100.00"), Montant.euros("50.00"));
+            Compte compte = new Compte("FR76-A", Montant.euros("100.00"));
 
             // Aucune décision n'est testée : ce test vérifie le langage Java.
             assertThat(compte.iban()).isEqualTo("FR76-A");
-            assertThat(compte.type()).isEqualTo(TypeCompte.PREMIUM);
             assertThat(compte.solde()).isEqualTo(Montant.euros("100.00"));
-            assertThat(compte.decouvertAutorise()).isEqualTo(Montant.euros("50.00"));
         }
 
         @Test
         @DisplayName("vérifie que le record expose ses composants")
         void testMontantGetters() {
-            Montant montant = new Montant(new BigDecimal("12.34"), Devise.EUR);
+            Montant montant = new Montant(new BigDecimal("12.34"));
 
             assertThat(montant.valeur()).isEqualByComparingTo("12.34");
-            assertThat(montant.devise()).isEqualTo(Devise.EUR);
         }
     }
 
@@ -67,23 +61,23 @@ class AntiPattern06TesterLesAccesseursTest {
     class Bon {
 
         @Test
-        @DisplayName("vérifie la décision prise par le calcul du disponible")
-        void devrait_additionner_solde_et_decouvert_pour_le_montant_disponible() {
-            // montantDisponible() contient un vrai calcul : il peut être faux.
-            Compte compte = new Compte("FR76-A", TypeCompte.PREMIUM,
-                    Montant.euros("100.00"), Montant.euros("50.00"));
+        @DisplayName("vérifie la décision prise par le débit")
+        void devrait_diminuer_le_solde_quand_le_debit_est_couvert() {
+            // debiter() contient un vrai calcul et un vrai contrôle : il peut être faux.
+            Compte compte = new Compte("FR76-A", Montant.euros("100.00"));
 
-            assertThat(compte.montantDisponible()).isEqualTo(Montant.euros("150.00"));
+            compte.debiter(Montant.euros("40.00"));
+
+            assertThat(compte.solde()).isEqualTo(Montant.euros("60.00"));
         }
 
         @Test
-        @DisplayName("vérifie la règle de refus au-delà du disponible")
-        void devrait_refuser_le_debit_quand_il_depasse_le_disponible() {
-            Compte compte = new Compte("FR76-A", TypeCompte.PREMIUM,
-                    Montant.euros("100.00"), Montant.euros("50.00"));
+        @DisplayName("vérifie la règle de refus au-delà du solde")
+        void devrait_refuser_le_debit_quand_il_depasse_le_solde() {
+            Compte compte = new Compte("FR76-A", Montant.euros("100.00"));
 
             assertThatExceptionOfType(SoldeInsuffisantException.class)
-                    .isThrownBy(() -> compte.debiter(Montant.euros("150.01")));
+                    .isThrownBy(() -> compte.debiter(Montant.euros("100.01")));
         }
 
         @Test
@@ -91,7 +85,7 @@ class AntiPattern06TesterLesAccesseursTest {
         void devrait_normaliser_l_echelle_a_deux_decimales() {
             // Ici on ne teste pas l'accesseur : on teste le compact constructor
             // qui arrondit. C'est du comportement, pas de la plomberie.
-            Montant montant = new Montant(new BigDecimal("12.3456"), Devise.EUR);
+            Montant montant = new Montant(new BigDecimal("12.3456"));
 
             assertThat(montant.valeur()).isEqualByComparingTo("12.35");
         }

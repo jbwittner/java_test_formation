@@ -60,8 +60,8 @@ class VirementCompletCorrigeIT extends SocleIntegrationPubSub {
     @BeforeEach
     void preparer() {
         jpa.deleteAll();
-        comptes.enregistrer(Compte.standard("FR76-SOURCE", Montant.euros("5000.00")));
-        comptes.enregistrer(Compte.standard("FR76-DEST", Montant.euros("0.00")));
+        comptes.enregistrer(new Compte("FR76-SOURCE", Montant.euros("5000.00")));
+        comptes.enregistrer(new Compte("FR76-DEST", Montant.euros("0.00")));
 
         if (admin.getSubscription(SOUSCRIPTION_DE_CONTROLE) == null) {
             admin.createSubscription(SOUSCRIPTION_DE_CONTROLE, "virements-executes");

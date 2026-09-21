@@ -47,8 +47,8 @@ class ValidationVirementCorrigeIT {
     @BeforeEach
     void preparerLesComptes() {
         jpa.deleteAll();
-        comptes.enregistrer(Compte.standard("FR76-SOURCE", Montant.euros("5000.00")));
-        comptes.enregistrer(Compte.standard("FR76-DEST", Montant.euros("0.00")));
+        comptes.enregistrer(new Compte("FR76-SOURCE", Montant.euros("5000.00")));
+        comptes.enregistrer(new Compte("FR76-DEST", Montant.euros("0.00")));
     }
 
     @Test

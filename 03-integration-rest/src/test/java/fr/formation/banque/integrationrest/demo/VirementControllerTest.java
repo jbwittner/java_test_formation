@@ -95,7 +95,6 @@ class VirementControllerTest {
                 .hasPathSatisfying("$.montant", valeur -> valeur.assertThat().isEqualTo(1000.00))
                 .hasPathSatisfying("$.frais", valeur -> valeur.assertThat().isEqualTo(1.00))
                 .hasPathSatisfying("$.totalDebite", valeur -> valeur.assertThat().isEqualTo(1001.00))
-                .hasPathSatisfying("$.devise", valeur -> valeur.assertThat().isEqualTo("EUR"))
                 .hasPathSatisfying("$.dateDeValeur", valeur -> valeur.assertThat().isEqualTo("2025-06-03"));
     }
 
@@ -164,18 +163,16 @@ class VirementControllerTest {
     }
 
     @Test
-    @DisplayName("expose le solde et le disponible d'un compte")
+    @DisplayName("expose le solde d'un compte")
     void devrait_renvoyer_le_compte_quand_l_iban_existe() {
         when(comptes.parIban("FR76-A")).thenReturn(Optional.of(
-                new Compte("FR76-A", fr.formation.banque.domaine.TypeCompte.PREMIUM,
-                        Montant.euros("100.00"), Montant.euros("50.00"))));
+                new Compte("FR76-A", Montant.euros("100.00"))));
 
         assertThat(client.get().uri("/api/comptes/FR76-A"))
                 .hasStatus(HttpStatus.OK)
                 .bodyJson()
                 .hasPathSatisfying("$.iban", v -> v.assertThat().isEqualTo("FR76-A"))
-                .hasPathSatisfying("$.type", v -> v.assertThat().isEqualTo("PREMIUM"))
-                .hasPathSatisfying("$.montantDisponible", v -> v.assertThat().isEqualTo(150.00));
+                .hasPathSatisfying("$.solde", v -> v.assertThat().isEqualTo(100.00));
     }
 
     @Test

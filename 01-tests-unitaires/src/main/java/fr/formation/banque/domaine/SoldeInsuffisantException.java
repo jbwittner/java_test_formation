@@ -1,6 +1,6 @@
 package fr.formation.banque.domaine;
 
-/** Levée lorsqu'un débit dépasse le solde augmenté du découvert autorisé. */
+/** Levée lorsqu'un débit dépasse le solde du compte. */
 public class SoldeInsuffisantException extends RuntimeException {
 
     private final String iban;

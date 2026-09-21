@@ -47,7 +47,7 @@ class AntiPattern09OrdreNonDeterministeTest {
 
     private static List<Compte> comptes() {
         return Stream.of("FR76-C", "FR76-A", "FR76-B")
-                .map(iban -> Compte.standard(iban, Montant.euros("100.00")))
+                .map(iban -> new Compte(iban, Montant.euros("100.00")))
                 .toList();
     }
 

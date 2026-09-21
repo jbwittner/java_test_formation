@@ -60,6 +60,19 @@ public class ServiceVirement {
         return virement;
     }
 
+    /**
+     * Charge un compte pour consultation.
+     *
+     * <p>Le contrôleur REST passe par ici plutôt que par {@link CompteRepository}
+     * directement : le domaine expose <b>une seule porte d'entrée</b>, et la
+     * couche web n'a donc qu'un seul collaborateur à mocker dans ses tests.
+     *
+     * @throws CompteIntrouvableException si l'IBAN est inconnu
+     */
+    public Compte consulter(String iban) {
+        return charger(iban);
+    }
+
     private Compte charger(String iban) {
         return comptes.parIban(iban).orElseThrow(() -> new CompteIntrouvableException(iban));
     }

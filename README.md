@@ -76,8 +76,8 @@ le corrigé.
 | [`01-tests-unitaires`](01-tests-unitaires) | Domaine pur, **zéro Spring** | AAA, nommage, AssertJ, tests paramétrés, `Clock` injecté, quoi mocker | non | 1 h 30 |
 | [`00-antipatterns`](00-antipatterns) | 10 mauvais tests et leur correction | ce qu'il ne faut pas faire, et pourquoi | non | 45 min |
 | [`02-integration-bdd`](02-integration-bdd) | JPA + PostgreSQL (Testcontainers) | `@DataJpaTest` vs `@SpringBootTest`, rollback, verrouillage optimiste, migrations | oui | 1 h 30 |
-| [`03-integration-rest`](03-integration-rest) | Contrôleur REST | `@WebMvcTest` vs bout en bout, `MockMvcTester`, `RestTestClient`, `@JsonTest` | oui | 1 h 30 |
-| [`04-integration-pubsub`](04-integration-pubsub) | Google Cloud Pub/Sub | émulateur, `@DynamicPropertySource`, Awaitility, idempotence | oui | 1 h 30 |
+| [`03-integration-rest`](03-integration-rest) | Contrôleur REST, service mocké | `@WebMvcTest` vs serveur réel, `MockMvcTester`, `RestTestClient`, `@JsonTest` | non | 1 h 30 |
+| [`04-integration-pubsub`](04-integration-pubsub) | Google Cloud Pub/Sub, traitement mocké | émulateur, `@DynamicPropertySource`, Awaitility, `ack`/`nack` | oui | 1 h 30 |
 
 Ordre conseillé en formation : **01 → 00 → 02 → 03 → 04**.
 
@@ -115,8 +115,8 @@ résumé et le lien.
 | 1 | 01 | tests paramétrés sur le barème de frais | [01-grille-frais](docs/exercices/01-grille-frais.md) |
 | 2 | 01 | rendre le temps déterministe (`Clock`) | [02-horodatage](docs/exercices/02-horodatage.md) |
 | 3 | 02 | verrouillage optimiste et contraintes de base | [03-verrouillage-optimiste](docs/exercices/03-verrouillage-optimiste.md) |
-| 4 | 03 | validation et refus métier, slice **et** bout en bout | [04-validation-rest](docs/exercices/04-validation-rest.md) |
-| 5 | 04 | chaîne complète HTTP → PostgreSQL → Pub/Sub | [05-chaine-complete](docs/exercices/05-chaine-complete.md) |
+| 4 | 03 | validation et refus métier, slice **et** serveur réel | [04-validation-rest](docs/exercices/04-validation-rest.md) |
+| 5 | 04 | les deux sens du flux d'événements, traitement mocké | [05-flux-evenements](docs/exercices/05-flux-evenements.md) |
 
 Chaque fiche contient l'énoncé, une checklist des cas attendus, des indices
 progressifs, et la **vérification par sabotage** : les lignes exactes à casser

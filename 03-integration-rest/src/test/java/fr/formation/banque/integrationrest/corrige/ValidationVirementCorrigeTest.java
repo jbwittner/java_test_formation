@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import fr.formation.banque.api.VirementController;
-import fr.formation.banque.domaine.CompteRepository;
 import fr.formation.banque.domaine.ServiceVirement;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,9 +44,6 @@ class ValidationVirementCorrigeTest {
 
     @MockitoBean
     private ServiceVirement virements;
-
-    @MockitoBean
-    private CompteRepository comptes;
 
     private static String demande(String source, String destination, String montant) {
         return """

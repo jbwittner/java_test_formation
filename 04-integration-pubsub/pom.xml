@@ -12,7 +12,7 @@
 
     <artifactId>04-integration-pubsub</artifactId>
     <name>04 - Integration Pub/Sub</name>
-    <description>Publication et consommation d'evenements sur l'emulateur Google Cloud Pub/Sub</description>
+    <description>Flux sortant et entrant sur l'emulateur Google Cloud Pub/Sub, traitement metier mocke</description>
 
     <dependencies>
         <!-- Apporte le domaine (01), la persistance (02) et l'API REST (03). -->
@@ -27,15 +27,14 @@
             <artifactId>spring-cloud-gcp-starter-pubsub</artifactId>
         </dependency>
 
-        <!-- ATTENTION Testcontainers 2.x : l'artifactId etait 'gcloud' en 1.x. -->
+        <!-- Seul l'emulateur Pub/Sub est demarre : les tests de ce module
+             s'arretent a la frontiere de messagerie et mockent le traitement.
+             La base de donnees se teste au chapitre 02, le contrat HTTP au
+             chapitre 03.
+             ATTENTION Testcontainers 2.x : l'artifactId etait 'gcloud' en 1.x. -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-gcloud</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -46,11 +45,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-testcontainers</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-resttestclient</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

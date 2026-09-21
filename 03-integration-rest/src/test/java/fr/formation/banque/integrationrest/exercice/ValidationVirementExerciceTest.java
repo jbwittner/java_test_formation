@@ -1,7 +1,6 @@
 package fr.formation.banque.integrationrest.exercice;
 
 import fr.formation.banque.api.VirementController;
-import fr.formation.banque.domaine.CompteRepository;
 import fr.formation.banque.domaine.ServiceVirement;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -35,9 +34,6 @@ class ValidationVirementExerciceTest {
 
     @MockitoBean
     private ServiceVirement virements;
-
-    @MockitoBean
-    private CompteRepository comptes;
 
     @Test
     @DisplayName("amorçage : montant à trois décimales")

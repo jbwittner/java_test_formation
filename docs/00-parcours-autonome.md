@@ -58,7 +58,7 @@ Un test qui reste vert sur un code cassé est un coût sans contrepartie.
 | 4 | `00-antipatterns` — les 10 cas | non | 45 min |
 | 5 | [Fiche 3 — un bon test d'intégration](03-bon-test-integration.md) + [fiche 4 — Testcontainers](04-testcontainers.md) | non | 30 min |
 | 6 | `02-integration-bdd` — démos + **exercice 3** | oui | 1 h 30 |
-| 7 | `03-integration-rest` — démos + **exercice 4** | oui | 1 h 30 |
+| 7 | `03-integration-rest` — démos + **exercice 4** | non | 1 h 30 |
 | 8 | `04-integration-pubsub` — démos + **exercice 5** | oui | 1 h 30 |
 
 Total : environ **8 heures**, réparties sur deux demi-journées. Les étapes 1 à 4
@@ -73,8 +73,8 @@ ne demandent aucun Docker et tiennent dans un train.
 | 1 | [Barème de frais](exercices/01-grille-frais.md) | 01 | tests paramétrés, bornes | 40 min |
 | 2 | [Date de valeur](exercices/02-horodatage.md) | 01 | `Clock` figé, déterminisme | 40 min |
 | 3 | [Verrouillage optimiste](exercices/03-verrouillage-optimiste.md) | 02 | ce qu'un mock ne peut pas prouver | 50 min |
-| 4 | [Validation REST](exercices/04-validation-rest.md) | 03 | slice **et** bout en bout | 50 min |
-| 5 | [Chaîne complète](exercices/05-chaine-complete.md) | 04 | HTTP → PostgreSQL → Pub/Sub | 60 min |
+| 4 | [Validation REST](exercices/04-validation-rest.md) | 03 | slice **et** serveur réel | 50 min |
+| 5 | [Flux d'événements](exercices/05-flux-evenements.md) | 04 | les deux sens, traitement mocké | 60 min |
 
 Chaque classe d'exercice porte un `@Disabled` : le dépôt est donc vert dès le
 clone. **Retirer l'annotation est la première étape de chaque exercice.**

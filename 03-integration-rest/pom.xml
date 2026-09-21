@@ -12,10 +12,12 @@
 
     <artifactId>03-integration-rest</artifactId>
     <name>03 - Integration REST</name>
-    <description>Controller REST : slice @WebMvcTest et test bout en bout avec RestTestClient</description>
+    <description>Controller REST : slice @WebMvcTest et test de la couche HTTP avec RestTestClient, service mocke</description>
 
     <dependencies>
-        <!-- Apporte le domaine (01) ET la persistance PostgreSQL (02). -->
+        <!-- Apporte le domaine (01) ET la persistance PostgreSQL (02). L'auto-
+             configuration JDBC/JPA/Flyway est exclue dans les tests : voir
+             la classe de test TestCoucheRest. -->
         <dependency>
             <groupId>fr.formation.banque</groupId>
             <artifactId>02-integration-bdd</artifactId>
@@ -48,23 +50,9 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Chaque chapitre embarque sa propre configuration Testcontainers :
-             un module reste ainsi lisible et executable isolement, ce qui compte
-             plus ici que d'eviter une duplication de quinze lignes. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-testcontainers</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers-postgresql</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers-junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Pas de Testcontainers ici : les tests de ce module s'arretent a la
+             couche REST et mockent le service. La base de donnees se teste au
+             chapitre 02, la chaine complete au chapitre 04. -->
+
     </dependencies>
 </project>

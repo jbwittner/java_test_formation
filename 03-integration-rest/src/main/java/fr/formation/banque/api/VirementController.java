@@ -1,8 +1,6 @@
 package fr.formation.banque.api;
 
 import fr.formation.banque.domaine.Compte;
-import fr.formation.banque.domaine.CompteIntrouvableException;
-import fr.formation.banque.domaine.CompteRepository;
 import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.ServiceVirement;
 import fr.formation.banque.domaine.Virement;
@@ -24,17 +22,20 @@ import org.springframework.web.bind.annotation.RestController;
  * mockant {@link ServiceVirement}, on vérifie le <b>contrat HTTP</b> (route,
  * code de statut, forme du JSON, en-tête {@code Location}) sans base de données
  * ni serveur.
+ *
+ * <p><b>Un seul collaborateur</b> : {@link ServiceVirement}. Le contrôleur ne
+ * connaît pas le dépôt de comptes, même pour une simple consultation — sinon la
+ * couche web aurait deux portes d'entrée dans le domaine, donc deux mocks à
+ * poser dans chaque test, et la frontière testée deviendrait floue.
  */
 @RestController
 @RequestMapping("/api")
 public class VirementController {
 
     private final ServiceVirement virements;
-    private final CompteRepository comptes;
 
-    public VirementController(ServiceVirement virements, CompteRepository comptes) {
+    public VirementController(ServiceVirement virements) {
         this.virements = virements;
-        this.comptes = comptes;
     }
 
     @PostMapping("/virements")
@@ -53,7 +54,7 @@ public class VirementController {
 
     @GetMapping("/comptes/{iban}")
     public ReponseCompte consulter(@PathVariable String iban) {
-        Compte compte = comptes.parIban(iban).orElseThrow(() -> new CompteIntrouvableException(iban));
+        Compte compte = virements.consulter(iban);
         return ReponseCompte.depuis(compte);
     }
 }

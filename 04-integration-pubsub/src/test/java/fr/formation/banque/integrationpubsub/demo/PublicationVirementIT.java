@@ -6,15 +6,13 @@ import static org.awaitility.Awaitility.await;
 import com.google.cloud.spring.pubsub.PubSubAdmin;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.support.converter.ConvertedAcknowledgeablePubsubMessage;
-import fr.formation.banque.domaine.Compte;
-import fr.formation.banque.domaine.CompteRepository;
 import fr.formation.banque.domaine.Montant;
-import fr.formation.banque.domaine.ServiceVirement;
+import fr.formation.banque.domaine.NotificateurVirement;
 import fr.formation.banque.domaine.Virement;
 import fr.formation.banque.evenement.EvenementVirement;
 import fr.formation.banque.integrationpubsub.support.SocleIntegrationPubSub;
-import fr.formation.banque.persistance.CompteJpaRepository;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,11 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * DÉMO 8 — tester la publication d'un événement (flux sortant).
+ * DÉMO 8 — tester le flux <b>sortant</b> : « on doit émettre un message ».
  *
- * <p>La chaîne exercée : {@code ServiceVirement} (domaine) → port
+ * <p>La chaîne exercée s'arrête à la frontière de messagerie : port
  * {@code NotificateurVirement} → {@code PublieurVirementPubSub} → sérialisation
  * JSON → émulateur Pub/Sub → souscription de contrôle → désérialisation.
+ * <b>Ni domaine, ni base de données</b> : le virement passé au port est un objet
+ * construit à la main, exactement comme le ferait un test unitaire.
+ *
+ * <p><b>La question posée est binaire</b> : quand l'application décide d'émettre,
+ * un message correctement formé part-il sur le bon topic ? Savoir <i>quand</i>
+ * elle décide d'émettre relève du domaine — c'est le chapitre 01.
  *
  * <p><b>Ce que ce test prouve, qu'un mock de {@code PubSubTemplate} ne prouve pas :</b>
  * <ul>
@@ -50,19 +54,18 @@ import org.springframework.boot.test.context.SpringBootTest;
  * souscription Pub/Sub distribue chaque message à UN seul de ses consommateurs.
  */
 @SpringBootTest
-@DisplayName("Publication d'un virement sur Pub/Sub")
+@DisplayName("Flux sortant — publication d'un virement sur Pub/Sub")
 class PublicationVirementIT extends SocleIntegrationPubSub {
 
     private static final String SOUSCRIPTION_DE_CONTROLE = "test-controle-publication";
 
+    /**
+     * Injecté par le <b>port du domaine</b>, pas par la classe concrète : le test
+     * appelle l'adaptateur exactement comme le ferait le domaine, sans rien
+     * savoir de Pub/Sub.
+     */
     @Autowired
-    private ServiceVirement virements;
-
-    @Autowired
-    private CompteRepository comptes;
-
-    @Autowired
-    private CompteJpaRepository jpa;
+    private NotificateurVirement notificateur;
 
     @Autowired
     private PubSubTemplate pubSub;
@@ -70,12 +73,13 @@ class PublicationVirementIT extends SocleIntegrationPubSub {
     @Autowired
     private PubSubAdmin admin;
 
+    private static Virement virement(String reference) {
+        return new Virement(reference, "FR76-SOURCE", "FR76-DEST",
+                Montant.euros("1000.00"), Montant.euros("1.00"), LocalDate.of(2025, 6, 3));
+    }
+
     @BeforeEach
     void preparer() {
-        jpa.deleteAll();
-        comptes.enregistrer(new Compte("FR76-SOURCE", Montant.euros("5000.00")));
-        comptes.enregistrer(new Compte("FR76-DEST", Montant.euros("0.00")));
-
         // Créée AVANT la publication : une souscription Pub/Sub ne reçoit que les
         // messages publiés après sa création. C'est la cause n°1 de test
         // « qui ne reçoit rien » sur l'émulateur.
@@ -98,9 +102,11 @@ class PublicationVirementIT extends SocleIntegrationPubSub {
     }
 
     @Test
-    @DisplayName("publie un événement complet quand le virement est exécuté")
-    void devrait_publier_l_evenement_quand_le_virement_est_execute() {
-        Virement virement = virements.executer("FR76-SOURCE", "FR76-DEST", Montant.euros("1000.00"));
+    @DisplayName("publie un événement complet quand le port est appelé")
+    void devrait_publier_l_evenement_quand_le_notificateur_est_appele() {
+        Virement virement = virement("VIR-SORTANT-1");
+
+        notificateur.virementExecute(virement);
 
         // Attente d'une CONDITION, pas d'une durée : le test se termine dès que
         // le message est là, et échoue avec la dernière erreur d'assertion si
@@ -113,25 +119,21 @@ class PublicationVirementIT extends SocleIntegrationPubSub {
 
                     assertThat(messages).hasSize(1);
                     EvenementVirement evenement = messages.get(0).getPayload();
-                    assertThat(evenement.reference()).isEqualTo(virement.reference());
+                    assertThat(evenement.reference()).isEqualTo("VIR-SORTANT-1");
                     assertThat(evenement.ibanSource()).isEqualTo("FR76-SOURCE");
                     assertThat(evenement.ibanDestination()).isEqualTo("FR76-DEST");
                     assertThat(evenement.montant()).isEqualByComparingTo("1000.00");
                     assertThat(evenement.frais()).isEqualByComparingTo("1.00");
-                    assertThat(evenement.dateDeValeur()).isEqualTo(virement.dateDeValeur());
+                    assertThat(evenement.dateDeValeur()).isEqualTo(LocalDate.of(2025, 6, 3));
                 });
     }
 
     @Test
-    @DisplayName("ne publie rien quand le virement est refusé")
-    void devrait_ne_rien_publier_quand_le_solde_est_insuffisant() {
-        try {
-            virements.executer("FR76-SOURCE", "FR76-DEST", Montant.euros("999999.00"));
-        } catch (RuntimeException attendue) {
-            // L'exception est le sujet d'un autre test ; ici on vérifie l'absence
-            // d'effet de bord.
-        }
-
+    @DisplayName("ne publie rien tant que le port n'est pas appelé")
+    void devrait_ne_rien_publier_quand_le_notificateur_n_est_pas_appele() {
+        // Le pendant du test précédent : c'est bien l'appel au port qui déclenche
+        // l'émission, et rien d'autre dans le démarrage de l'application.
+        //
         // Prouver une ABSENCE demande de laisser une vraie chance au message
         // d'arriver : on attend un court instant, puis on vérifie que rien n'est
         // venu. C'est le seul cas où une attente fixe se justifie — et Awaitility

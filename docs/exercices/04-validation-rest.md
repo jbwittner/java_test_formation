@@ -1,12 +1,14 @@
 # Exercice 4 — Le même refus, à deux niveaux
 
-> Module `03-integration-rest` · **50 min** · **Docker requis** (pour la partie 2)
+> Module `03-integration-rest` · **50 min** · pas de Docker
 
 ## Objectif
 
 Tester les refus d'une API REST **deux fois** : une fois en slice `@WebMvcTest`
-(rapide, service mocké) et une fois bout en bout (lent, vraie base). Puis
-comparer ce que chaque niveau prouve — et ce qu'il coûte.
+(MockMvc, aucune socket) et une fois sur un **vrai serveur HTTP**
+(`@SpringBootTest` + `RestTestClient`). Dans les deux cas le service est mocké :
+le sujet est la couche REST, pas le métier. Puis comparer ce que chaque niveau
+prouve — et ce qu'il coûte.
 
 **Compétence visée** : placer chaque test au bon niveau de la pyramide, et
 justifier ce choix par ce qu'il prouve, pas par habitude.
@@ -15,7 +17,9 @@ justifier ce choix par ce qu'il prouve, pas par habitude.
 
 - [Fiche 1 — pyramide et vocabulaire](../01-pyramide-et-vocabulaire.md)
 - `03-integration-rest/.../demo/VirementControllerTest.java` — la slice
-- `03-integration-rest/.../demo/VirementBoutEnBoutIT.java` — le bout en bout
+- `03-integration-rest/.../demo/VirementHttpIT.java` — le serveur réel
+- `03-integration-rest/.../support/SocleCoucheRest.java` — la configuration du
+  contexte : serveur réel, sans JDBC/JPA/Flyway
 - `03-integration-rest/src/main/.../api/DemandeVirement.java` — les contraintes
 - `03-integration-rest/src/main/.../api/GestionnaireErreursApi.java` — la
   traduction exception → code HTTP
@@ -38,13 +42,18 @@ C'est cette distinction que l'exercice doit rendre visible.
 
 Les quatre cas ci-dessus, avec le service mocké.
 
-### Partie 2 — bout en bout (`ValidationVirementExerciceIT`)
+### Partie 2 — serveur réel (`ValidationVirementExerciceIT`)
 
 Deux cas au plus — « deux IBAN identiques » et, si vous voulez, un montant
-invalide — et dans les deux cas la vérification qu'**aucun solde n'a bougé en
-base**. C'est la seule chose que ce niveau apporte. Ne pas rejouer ici les cinq
-cas de validation de la partie 1 : ils seraient dix fois plus lents sans rien
-prouver de plus.
+invalide — un par **chemin de refus** : l'un vient de la validation et coupe
+avant le service, l'autre remonte du service et passe par le
+`@RestControllerAdvice`. Ce que ce niveau ajoute, c'est que le refus survit à une
+vraie traversée HTTP : serveur embarqué, socket, en-têtes, `problem+json`
+désérialisé par un vrai client.
+
+Ne pas rejouer ici les cinq cas de validation de la partie 1 : ils seraient dix
+fois plus lents sans rien prouver de plus. Et ne pas chercher à asserter l'état
+en base : le service est mocké, la persistance se teste au chapitre 02.
 
 ## Étapes
 
@@ -59,7 +68,8 @@ prouver de plus.
    `@RestControllerAdvice` renvoie bien un 400.
 5. Partie 1 : regrouper les trois cas de montant invalide dans un
    `@ParameterizedTest`.
-6. Partie 2 : le refus bout en bout + l'assertion sur le solde inchangé.
+6. Partie 2 : le refus sur serveur réel + l'assertion sur l'appel (ou le
+   non-appel) du service mocké.
 
 ```bash
 ./mvnw -pl 03-integration-rest -am verify
@@ -78,10 +88,11 @@ prouver de plus.
 - [ ] IBAN identiques → le service mocké lève, la réponse est 400
 - [ ] sur ce dernier cas, le service **est** appelé (contrairement aux autres)
 
-**Bout en bout**
+**Serveur réel**
 
-- [ ] IBAN identiques → 400
-- [ ] `FR76-SOURCE` vaut toujours 5000.00 **en base** après l'appel
+- [ ] IBAN identiques → 400, et le corps n'a **pas** de propriété `champs`
+- [ ] sur ce cas, `verify(virements).executer(...)` : le service **est** appelé
+- [ ] montant à 3 décimales → 400 + `$.champs.montant` + `verifyNoInteractions`
 - [ ] au plus deux cas dans cette classe : elle ne rejoue pas la partie 1
 
 ## Vérification par sabotage
@@ -144,7 +155,8 @@ when(virements.executer(any(), any(), any()))
         .thenThrow(new IllegalArgumentException("Un virement doit relier deux comptes distincts"));
 ```
 
-Bout en bout — il n'y a pas de mock, et l'assertion qui compte est la dernière :
+Serveur réel — même mock, mais la requête passe par une vraie socket, et
+l'assertion qui compte est la dernière :
 
 ```java
 client.post().uri("/api/virements")
@@ -153,19 +165,22 @@ client.post().uri("/api/virements")
                 {"ibanSource":"FR76-SOURCE","ibanDestination":"FR76-SOURCE","montant":10.00}
                 """)
         .exchange()
-        .expectStatus().isBadRequest();
+        .expectStatus().isBadRequest()
+        .expectBody()
+        .jsonPath("$.champs").doesNotExist();
 
-assertThat(comptes.parIban("FR76-SOURCE").orElseThrow().solde())
-        .isEqualTo(Montant.euros("5000.00"));
+verify(virements).executer("FR76-SOURCE", "FR76-SOURCE", Montant.euros("10.00"));
 ```
 </details>
 
 ## Questions de fin
 
 1. Comparer les durées affichées par Maven pour la classe `...Test` (slice) et la
-   classe `...IT` (bout en bout). Quel rapport ?
+   classe `...IT` (serveur réel). Quel rapport ?
 2. Si l'équipe n'avait le budget que pour une seule des deux classes, laquelle
    garder — et qu'accepterait-elle de perdre ?
+3. Les deux niveaux mockent le service. Quel bug de la couche REST échapperait
+   malgré tout à ces deux classes, et à quel chapitre serait-il attrapé ?
 
 ## Corrigés
 

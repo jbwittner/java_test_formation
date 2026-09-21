@@ -11,13 +11,11 @@ import static org.mockito.Mockito.when;
 import fr.formation.banque.api.VirementController;
 import fr.formation.banque.domaine.Compte;
 import fr.formation.banque.domaine.CompteIntrouvableException;
-import fr.formation.banque.domaine.CompteRepository;
 import fr.formation.banque.domaine.Montant;
 import fr.formation.banque.domaine.ServiceVirement;
 import fr.formation.banque.domaine.SoldeInsuffisantException;
 import fr.formation.banque.domaine.Virement;
 import java.time.LocalDate;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +63,10 @@ class VirementControllerTest {
     @Autowired
     private MockMvcTester client;
 
-    // Les collaborateurs du contrôleur sont remplacés par des mocks : on teste
-    // la traduction HTTP, pas la règle métier (déjà couverte au chapitre 01).
+    // Le seul collaborateur du contrôleur, remplacé par un mock : on teste la
+    // traduction HTTP, pas la règle métier (déjà couverte au chapitre 01).
     @MockitoBean
     private ServiceVirement virements;
-
-    @MockitoBean
-    private CompteRepository comptes;
 
     private static final String DEMANDE_VALIDE = """
             {"ibanSource":"FR76-SOURCE","ibanDestination":"FR76-DEST","montant":1000.00}
@@ -165,8 +160,8 @@ class VirementControllerTest {
     @Test
     @DisplayName("expose le solde d'un compte")
     void devrait_renvoyer_le_compte_quand_l_iban_existe() {
-        when(comptes.parIban("FR76-A")).thenReturn(Optional.of(
-                new Compte("FR76-A", Montant.euros("100.00"))));
+        when(virements.consulter("FR76-A")).thenReturn(
+                new Compte("FR76-A", Montant.euros("100.00")));
 
         assertThat(client.get().uri("/api/comptes/FR76-A"))
                 .hasStatus(HttpStatus.OK)
@@ -178,7 +173,8 @@ class VirementControllerTest {
     @Test
     @DisplayName("renvoie 404 sur la consultation d'un IBAN inconnu")
     void devrait_renvoyer_404_quand_la_consultation_porte_sur_un_iban_inconnu() {
-        when(comptes.parIban("FR76-FANTOME")).thenReturn(Optional.empty());
+        when(virements.consulter("FR76-FANTOME"))
+                .thenThrow(new CompteIntrouvableException("FR76-FANTOME"));
 
         assertThat(client.get().uri("/api/comptes/FR76-FANTOME"))
                 .hasStatus(HttpStatus.NOT_FOUND);

@@ -53,7 +53,7 @@ class MonTestIT {
 JUnit **arrête** le conteneur à la fin de la classe. Avec dix classes de test, on
 paie dix démarrages.
 
-### Solution A — le conteneur comme bean (chapitres 02 et 03)
+### Solution A — le conteneur comme bean (chapitre 02)
 
 Spring met en cache le contexte entre les classes de test : toutes celles qui
 importent la même `@TestConfiguration` partagent le même conteneur.
@@ -66,16 +66,20 @@ configurations de test distinctes est une optimisation de premier ordre.**
 
 ```java
 public abstract class SocleIntegrationPubSub {
-    protected static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(...);
     protected static final PubSubEmulatorContainer EMULATEUR = new PubSubEmulatorContainer(...);
 
-    static { POSTGRES.start(); EMULATEUR.start(); }
+    static { EMULATEUR.start(); }
 }
 ```
 
-Ni `@Testcontainers` ni `@Container` : JUnit n'y touche pas. Les conteneurs
-vivent le temps de la JVM de test, et Ryuk (le conteneur de nettoyage de
-Testcontainers) les supprime à la fin.
+Ni `@Testcontainers` ni `@Container` : JUnit n'y touche pas. Le conteneur vit le
+temps de la JVM de test, et Ryuk (le conteneur de nettoyage de Testcontainers) le
+supprime à la fin.
+
+⚠️ **Ne démarrer que ce dont le test a besoin.** Le chapitre 04 n'a pas de
+conteneur PostgreSQL : ses tests s'arrêtent à la frontière de messagerie et
+mockent le traitement métier. Ajouter une base « au cas où » coûte quelques
+secondes à chaque exécution et brouille la question à laquelle le test répond.
 
 ## Réutilisation entre deux lancements
 

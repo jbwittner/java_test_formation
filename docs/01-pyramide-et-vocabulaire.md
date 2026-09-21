@@ -24,25 +24,33 @@ directement dans le build : `*Test` pour les uns, `*IT` pour les autres.
 ## La pyramide, et ce qu'elle veut dire
 
 ```
-        /\        E2E, chaîne complète    -> quelques-uns
-       /  \       (03 bout en bout, 04 chaîne complète)
+        /\        Frontière complète      -> quelques-uns
+       /  \       (03 serveur HTTP réel, 04 émulateur Pub/Sub)
       /----\
      /      \     Intégration ciblée      -> quelques dizaines
-    /        \    (02 base, 03 slice web, 04 Pub/Sub)
+    /        \    (02 base, 03 slice web, 04 adaptateurs)
    /----------\
   /            \  Unitaires               -> des centaines
  /______________\ (01 domaine, 00 anti-patterns)
 ```
+
+**Ce dépôt ne contient volontairement aucun test bout en bout.** Chaque
+adaptateur est testé contre sa vraie technologie — PostgreSQL au chapitre 02, un
+serveur HTTP au chapitre 03, un broker Pub/Sub au chapitre 04 — mais **avec ses
+voisins mockés**. Chaque couche est ainsi prouvée une fois, là où elle est la
+moins chère à prouver. Le prix de ce choix est explicite : aucun test ne vérifie
+que les trois adaptateurs fonctionnent *ensemble*. C'est un arbitrage assumé, et
+une bonne question à se poser sur son propre projet.
 
 La forme n'est pas un dogme esthétique, c'est une conséquence économique.
 Chiffres **mesurés sur ce dépôt** :
 
 | Suite | Commande | Tests | Durée | Docker |
 |---|---|---|---|---|
-| Unitaires | `./mvnw test` | 106 | **~7 s** | non |
-| Tout | `./mvnw verify` | 143 | **~34 s** | oui |
+| Unitaires | `./mvnw test` | 110 | **~8 s** | non |
+| Tout | `./mvnw verify` | 150 | **~27 s** | oui |
 
-Les 37 tests d'intégration coûtent plus cher que les 106 unitaires réunis. Si
+Les 40 tests d'intégration coûtent plus cher que les 110 unitaires réunis. Si
 l'on inversait les proportions, la suite passerait à plusieurs minutes — et une
 suite lente finit par ne plus être lancée.
 

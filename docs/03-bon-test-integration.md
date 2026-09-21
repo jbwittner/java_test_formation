@@ -13,8 +13,10 @@ qui aurait pu l'être en mémoire est du temps perdu à chaque exécution, par c
 développeur, à chaque commit.
 
 Exemple concret dans ce dépôt : le corrigé de l'exercice 4 contient **cinq**
-tests de validation au niveau slice, et **deux** seulement en bout en bout — ceux
-qui vérifient qu'aucun mouvement n'est resté en base.
+tests de validation au niveau slice, et **deux** seulement sur serveur HTTP réel
+— un par chemin de refus, pour prouver que le rejet survit à une vraie traversée
+HTTP. Corollaire du même principe : ces deux tests mockent le service, car ce que
+fait le domaine ensuite est déjà prouvé ailleurs.
 
 ## Les quatre règles
 
@@ -25,10 +27,13 @@ qui vérifient qu'aucun mouvement n'est resté en base.
 | Une requête SQL, une cartographie JPA | `@DataJpaTest` (~1,3 s pour 5 tests) |
 | Un contrat HTTP, un code d'erreur | `@WebMvcTest` (~0,6 s pour 7 tests) |
 | Un format JSON | `@JsonTest` (~1 s pour 3 tests) |
-| Un parcours complet | `@SpringBootTest` (~4,8 s pour 4 tests) |
+| Un serveur HTTP réel, un broker | `@SpringBootTest` (~1,9 s pour 5 tests) |
 
-Ces durées sont mesurées sur ce dépôt. L'écart entre la slice web et le bout en
-bout est d'un facteur 8 par test.
+Ces durées sont mesurées sur ce dépôt. L'écart entre la slice web et le test sur
+serveur réel est d'un facteur 3 par classe — et il grimpe à un facteur 10 dès
+qu'une base de données entre dans le contexte. D'où la règle suivie ici : on ne
+démarre que la technologie dont le test a réellement besoin, et on mocke le
+reste.
 
 ### 2. Isolation explicite
 
